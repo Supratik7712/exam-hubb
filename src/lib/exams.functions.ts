@@ -27,7 +27,7 @@ export const deleteQuestion = createServerFn({ method: "POST" }).middleware([req
 });
 export const saveExam = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(examSchema).handler(async ({ data, context }) => {
   const { question_ids, ...exam } = data;
-  const { data: id, error } = await context.supabase.rpc("save_exam", { _exam: exam, _question_ids: question_ids });
+  const { data: id, error } = await context.supabase.rpc("save_exam", { _exam: { ...exam, settings: { ...exam.settings, question_ids } }, _question_ids: question_ids });
   if (error) throw error; return id;
 });
 export const manageExam = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(z.object({ id: z.string().uuid(), action: z.enum(["close", "delete"]) })).handler(async ({ data, context }) => {
