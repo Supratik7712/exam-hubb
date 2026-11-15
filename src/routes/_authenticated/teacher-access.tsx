@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ClipboardCheck, Hourglass, Loader2 } from "lucide-react";
@@ -28,10 +29,12 @@ function TeacherAccess() {
     if (r.data?.roles.includes("teacher")) navigate({ to: "/teacher" });
     else toast.info("Not approved yet — an administrator still needs to approve your request.");
   }
+  const isTeacher = !!me?.roles.includes("teacher");
+  useEffect(() => { if (isTeacher) void navigate({ to: "/teacher", replace: true }); }, [isTeacher, navigate]);
   const fallback = me && primaryRole(me) ? homePathFor(me) : null;
 
   if (isLoading) return <div className="flex min-h-screen items-center justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>;
-  if (me?.roles.includes("teacher")) { void navigate({ to: "/teacher", replace: true }); return null; }
+  if (isTeacher) return null;
 
   const Icon = requested ? Hourglass : ClipboardCheck;
   return (
