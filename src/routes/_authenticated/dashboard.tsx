@@ -1,7 +1,9 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { meQuery, homePathFor } from "@/lib/auth";
+import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
+  head: () => pageHead("Your dashboard", "Open your role-based ExamHub workspace."),
   beforeLoad: async ({ context }) => {
     const me = await context.queryClient.ensureQueryData(meQuery);
     throw redirect({ to: homePathFor(me) });
