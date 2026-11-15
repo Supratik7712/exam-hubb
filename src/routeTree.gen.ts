@@ -19,6 +19,7 @@ import { Route as AuthenticatedPendingRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedStudentRouteRouteImport } from './routes/_authenticated/student/route'
 import { Route as AuthenticatedTeacherRouteRouteImport } from './routes/_authenticated/teacher/route'
+import { Route as AuthenticatedTeacherAccessRouteImport } from './routes/_authenticated/teacher-access'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminExamsRouteImport } from './routes/_authenticated/admin/exams'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
@@ -78,6 +79,12 @@ const AuthenticatedTeacherRouteRoute =
     path: '/teacher',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedTeacherAccessRoute =
+  AuthenticatedTeacherAccessRouteImport.update({
+    id: '/teacher-access',
+    path: '/teacher-access',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -128,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/pending': typeof AuthenticatedPendingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/teacher-access': typeof AuthenticatedTeacherAccessRoute
   '/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/teacher/exams': typeof AuthenticatedTeacherExamsRoute
@@ -143,6 +151,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/pending': typeof AuthenticatedPendingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/teacher-access': typeof AuthenticatedTeacherAccessRoute
   '/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/teacher/exams': typeof AuthenticatedTeacherExamsRoute
@@ -163,6 +172,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/pending': typeof AuthenticatedPendingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/teacher-access': typeof AuthenticatedTeacherAccessRoute
   '/_authenticated/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/teacher/exams': typeof AuthenticatedTeacherExamsRoute
@@ -183,6 +193,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/pending'
     | '/profile'
+    | '/teacher-access'
     | '/admin/exams'
     | '/admin/users'
     | '/teacher/exams'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/pending'
     | '/profile'
+    | '/teacher-access'
     | '/admin/exams'
     | '/admin/users'
     | '/teacher/exams'
@@ -217,6 +229,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/pending'
     | '/_authenticated/profile'
+    | '/_authenticated/teacher-access'
     | '/_authenticated/admin/exams'
     | '/_authenticated/admin/users'
     | '/_authenticated/teacher/exams'
@@ -303,6 +316,13 @@ declare module '@tanstack/react-router' {
       path: '/teacher'
       fullPath: '/teacher'
       preLoaderRoute: typeof AuthenticatedTeacherRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/teacher-access': {
+      id: '/_authenticated/teacher-access'
+      path: '/teacher-access'
+      fullPath: '/teacher-access'
+      preLoaderRoute: typeof AuthenticatedTeacherAccessRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin/': {
@@ -414,6 +434,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPendingRoute: typeof AuthenticatedPendingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
+  AuthenticatedTeacherAccessRoute: typeof AuthenticatedTeacherAccessRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -423,6 +444,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPendingRoute: AuthenticatedPendingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
+  AuthenticatedTeacherAccessRoute: AuthenticatedTeacherAccessRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

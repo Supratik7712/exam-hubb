@@ -20,6 +20,6 @@ describe("sign-in return destination", () => {
   });
   it("cannot grant teacher access to a student through stored intent", () => {
     saveSignInRole("teacher");
-    expect(homePathFor({ ...owner, roles: ["student"] }, takeSignInRole())).toBe("/student");
+    expect(homePathFor({ ...owner, roles: ["student"], profile: { account_status: "active" } as Me["profile"] }, takeSignInRole())).toBe("/teacher-access");
   });
 });

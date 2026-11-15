@@ -224,6 +224,7 @@ export type Database = {
         Args: { _action: string; _id: string }
         Returns: undefined
       }
+      request_teacher_access: { Args: never; Returns: undefined }
       save_exam: {
         Args: { _exam: Json; _question_ids: string[] }
         Returns: string

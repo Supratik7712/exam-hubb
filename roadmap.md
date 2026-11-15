@@ -3,6 +3,7 @@
 - [x] Correct returning-session and Google/Lovable sign-in redirects so teacher selection is not reset to Student (signed-in teacher return and refresh verified; external provider popup not exercised)
 
 - [x] Restore teacher dashboard access for the project owner and allow switching between assigned workspaces (dashboard, question bank, exam editor and mobile access verified)
+- [x] Student-only accounts choosing Teacher get a "Request teacher access" page; admins approve in Users → Pending (request, approval and teacher dashboard opening verified)
 
 - [x] Phase 1 – Foundation: design system, landing, app shell, backend
 - [x] Phase 2 – Auth: sign up/in (email, Google, Lovable), reset password, roles, teacher approval, protected dashboards, admin user management
