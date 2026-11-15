@@ -28,3 +28,10 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Project rules
+- Roles live only in `public.user_roles` (enum student/teacher/admin), checked via `has_role()`; never derive privileges from profile fields or user metadata — prevents privilege escalation.
+- Signup trigger grants only `student`; teachers start `pending` with no role until an admin approves via `admin_approve_teacher` RPC; admins are provisioned manually — public signup can never create elevated roles.
+- Admin mutations go through SECURITY DEFINER RPCs that check `has_role(auth.uid(),'admin')` and write `audit_log` — keeps authorization server-side and auditable.
+- Role dashboards live at `/_authenticated/{student,teacher,admin}` with a `requireRole` beforeLoad; this is UX only, RLS is the real gate.
+- Answer keys must never be readable by students during attempts; exam start/submit/evaluation run in server functions — scores are never trusted from the client.
