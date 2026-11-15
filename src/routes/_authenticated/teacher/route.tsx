@@ -4,7 +4,7 @@ import { AppShell } from "@/components/app-shell";
 import { meQuery } from "@/lib/auth";
 import { requireRole } from "@/lib/role-guard";
 
-const TITLES: Record<string, string> = { "/teacher": "Teacher dashboard" };
+const TITLES: Record<string, string> = { "/teacher": "Teacher dashboard", "/teacher/exams": "Exam management", "/teacher/questions": "Question bank" };
 
 export const Route = createFileRoute("/_authenticated/teacher")({
   beforeLoad: ({ context }) => requireRole(context.queryClient, "teacher"),
@@ -15,8 +15,9 @@ export const Route = createFileRoute("/_authenticated/teacher")({
 function Layout() {
   const { data: me } = useSuspenseQuery(meQuery);
   const { pathname } = useLocation();
+  if (!me) return null;
   return (
-    <AppShell me={me!} role="teacher" title={TITLES[pathname] ?? "Teacher dashboard"}>
+    <AppShell me={me} role="teacher" title={TITLES[pathname] ?? "Teacher dashboard"}>
       <Outlet />
     </AppShell>
   );

@@ -20,9 +20,12 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedStudentRouteRouteImport } from './routes/_authenticated/student/route'
 import { Route as AuthenticatedTeacherRouteRouteImport } from './routes/_authenticated/teacher/route'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminExamsRouteImport } from './routes/_authenticated/admin/exams'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedStudentIndexRouteImport } from './routes/_authenticated/student/index'
 import { Route as AuthenticatedTeacherIndexRouteImport } from './routes/_authenticated/teacher/index'
+import { Route as AuthenticatedTeacherExamsRouteImport } from './routes/_authenticated/teacher/exams'
+import { Route as AuthenticatedTeacherQuestionsRouteImport } from './routes/_authenticated/teacher/questions'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -80,6 +83,11 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminExamsRoute = AuthenticatedAdminExamsRouteImport.update({
+  id: '/exams',
+  path: '/exams',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -97,6 +105,18 @@ const AuthenticatedTeacherIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedTeacherRouteRoute,
   } as any)
+const AuthenticatedTeacherExamsRoute =
+  AuthenticatedTeacherExamsRouteImport.update({
+    id: '/exams',
+    path: '/exams',
+    getParentRoute: () => AuthenticatedTeacherRouteRoute,
+  } as any)
+const AuthenticatedTeacherQuestionsRoute =
+  AuthenticatedTeacherQuestionsRouteImport.update({
+    id: '/questions',
+    path: '/questions',
+    getParentRoute: () => AuthenticatedTeacherRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -108,7 +128,10 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/pending': typeof AuthenticatedPendingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/student/': typeof AuthenticatedStudentIndexRoute
   '/teacher/': typeof AuthenticatedTeacherIndexRoute
@@ -120,7 +143,10 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/pending': typeof AuthenticatedPendingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/student': typeof AuthenticatedStudentIndexRoute
   '/teacher': typeof AuthenticatedTeacherIndexRoute
@@ -137,7 +163,10 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/pending': typeof AuthenticatedPendingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/_authenticated/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/_authenticated/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/student/': typeof AuthenticatedStudentIndexRoute
   '/_authenticated/teacher/': typeof AuthenticatedTeacherIndexRoute
@@ -154,7 +183,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/pending'
     | '/profile'
+    | '/admin/exams'
     | '/admin/users'
+    | '/teacher/exams'
+    | '/teacher/questions'
     | '/admin/'
     | '/student/'
     | '/teacher/'
@@ -166,7 +198,10 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/pending'
     | '/profile'
+    | '/admin/exams'
     | '/admin/users'
+    | '/teacher/exams'
+    | '/teacher/questions'
     | '/admin'
     | '/student'
     | '/teacher'
@@ -182,7 +217,10 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/pending'
     | '/_authenticated/profile'
+    | '/_authenticated/admin/exams'
     | '/_authenticated/admin/users'
+    | '/_authenticated/teacher/exams'
+    | '/_authenticated/teacher/questions'
     | '/_authenticated/admin/'
     | '/_authenticated/student/'
     | '/_authenticated/teacher/'
@@ -274,6 +312,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/exams': {
+      id: '/_authenticated/admin/exams'
+      path: '/exams'
+      fullPath: '/admin/exams'
+      preLoaderRoute: typeof AuthenticatedAdminExamsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/users': {
       id: '/_authenticated/admin/users'
       path: '/users'
@@ -295,16 +340,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTeacherIndexRouteImport
       parentRoute: typeof AuthenticatedTeacherRouteRoute
     }
+    '/_authenticated/teacher/exams': {
+      id: '/_authenticated/teacher/exams'
+      path: '/exams'
+      fullPath: '/teacher/exams'
+      preLoaderRoute: typeof AuthenticatedTeacherExamsRouteImport
+      parentRoute: typeof AuthenticatedTeacherRouteRoute
+    }
+    '/_authenticated/teacher/questions': {
+      id: '/_authenticated/teacher/questions'
+      path: '/questions'
+      fullPath: '/teacher/questions'
+      preLoaderRoute: typeof AuthenticatedTeacherQuestionsRouteImport
+      parentRoute: typeof AuthenticatedTeacherRouteRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminExamsRoute: typeof AuthenticatedAdminExamsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminExamsRoute: AuthenticatedAdminExamsRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
@@ -329,11 +390,15 @@ const AuthenticatedStudentRouteRouteWithChildren =
   )
 
 interface AuthenticatedTeacherRouteRouteChildren {
+  AuthenticatedTeacherExamsRoute: typeof AuthenticatedTeacherExamsRoute
+  AuthenticatedTeacherQuestionsRoute: typeof AuthenticatedTeacherQuestionsRoute
   AuthenticatedTeacherIndexRoute: typeof AuthenticatedTeacherIndexRoute
 }
 
 const AuthenticatedTeacherRouteRouteChildren: AuthenticatedTeacherRouteRouteChildren =
   {
+    AuthenticatedTeacherExamsRoute: AuthenticatedTeacherExamsRoute,
+    AuthenticatedTeacherQuestionsRoute: AuthenticatedTeacherQuestionsRoute,
     AuthenticatedTeacherIndexRoute: AuthenticatedTeacherIndexRoute,
   }
 

@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Users } from "lucide-react";
+import { Loader2, Users, ShieldPlus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,10 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/app-shell";
 import { useMe } from "@/lib/auth";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/admin/users")({ component: UsersPage });
+export const Route = createFileRoute("/_authenticated/admin/users")({ head: () => pageHead("User management", "Approve teachers, manage accounts and grant administrator access on ExamHub."), component: UsersPage });
 
 type Filter = "all" | "student" | "teacher" | "pending";
 
@@ -21,15 +23,17 @@ function UsersPage() {
   const { data: me } = useMe();
   const [filter, setFilter] = useState<Filter>("all");
   const [q, setQ] = useState("");
+  const [grant, setGrant] = useState<{ id: string; email: string | null } | null>(null);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-users"],
     queryFn: async () => {
-      const [{ data: profiles, error }, { data: roles }] = await Promise.all([
+      const [{ data: profiles, error }, { data: roles, error: rolesError }] = await Promise.all([
         supabase.from("profiles").select("*").order("created_at", { ascending: false }).limit(500),
         supabase.from("user_roles").select("user_id, role"),
       ]);
       if (error) throw error;
+      if (rolesError) throw rolesError;
       const byUser = new Map<string, string[]>();
       roles?.forEach((r) => byUser.set(r.user_id, [...(byUser.get(r.user_id) ?? []), r.role]));
       return (profiles ?? []).map((p) => ({ ...p, roles: byUser.get(p.id) ?? [] }));
@@ -37,13 +41,13 @@ function UsersPage() {
   });
 
   const act = useMutation({
-    mutationFn: async ({ id, action }: { id: string; action: "approve" | "activate" | "deactivate" }) => {
-      const { error } = action === "approve"
+    mutationFn: async ({ id, action }: { id: string; action: "approve" | "activate" | "deactivate" | "grant" }) => {
+      const { error } = action === "grant" ? await supabase.rpc("admin_grant_admin", { _user_id: id }) : action === "approve"
         ? await supabase.rpc("admin_approve_teacher", { _user_id: id })
         : await supabase.rpc("admin_set_account_status", { _user_id: id, _status: action === "activate" ? "active" : "inactive" });
       if (error) throw error;
     },
-    onSuccess: () => { toast.success("Account updated"); qc.invalidateQueries({ queryKey: ["admin-users"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); },
+    onSuccess: () => { toast.success("Account updated"); setGrant(null); qc.invalidateQueries({ queryKey: ["admin-users"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); },
     onError: (e: Error) => toast.error(e.message),
   });
 
@@ -96,6 +100,7 @@ function UsersPage() {
                       {pending && <Button size="sm" disabled={act.isPending} onClick={() => act.mutate({ id: u.id, action: "approve" })}>Approve teacher</Button>}
                       {!self && u.account_status === "active" && <Button size="sm" variant="outline" disabled={act.isPending} onClick={() => act.mutate({ id: u.id, action: "deactivate" })}>Deactivate</Button>}
                       {!self && u.account_status === "inactive" && <Button size="sm" variant="outline" disabled={act.isPending} onClick={() => act.mutate({ id: u.id, action: "activate" })}>Activate</Button>}
+                       {u.account_status === "active" && !u.roles.includes("admin") && <Button size="sm" variant="outline" disabled={act.isPending} onClick={() => setGrant({ id: u.id, email: u.email })}><ShieldPlus className="size-4" />Grant admin</Button>}
                     </TableCell>
                   </TableRow>
                 );
@@ -104,6 +109,7 @@ function UsersPage() {
           </Table>
         </div>
       )}
+      <Dialog open={!!grant} onOpenChange={o => { if (!o && !act.isPending) setGrant(null); }}><DialogContent><DialogTitle>Grant admin access?</DialogTitle><DialogDescription>{grant?.email} will be able to manage users, approve teachers, close exams and grant admin access to others.</DialogDescription><Button disabled={act.isPending} onClick={() => { if (grant) act.mutate({ id: grant.id, action: "grant" }); }}><ShieldPlus />Confirm admin access</Button></DialogContent></Dialog>
     </div>
   );
 }

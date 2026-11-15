@@ -28,8 +28,8 @@ const NAV: Record<AppRole, NavItem[]> = {
   ],
   teacher: [
     { label: "Dashboard", icon: LayoutDashboard, to: "/teacher" },
-    { label: "Exams", icon: BookOpen, soon: true },
-    { label: "Question bank", icon: FileQuestion, soon: true },
+    { label: "Exams", icon: BookOpen, to: "/teacher/exams" },
+    { label: "Question bank", icon: FileQuestion, to: "/teacher/questions" },
     { label: "AI generator", icon: Sparkles, soon: true },
     { label: "Results", icon: ClipboardList, soon: true },
     { label: "Monitoring", icon: Activity, soon: true },
@@ -38,7 +38,7 @@ const NAV: Record<AppRole, NavItem[]> = {
   admin: [
     { label: "Overview", icon: LayoutDashboard, to: "/admin" },
     { label: "Users", icon: Users, to: "/admin/users" },
-    { label: "All exams", icon: BookOpen, soon: true },
+    { label: "All exams", icon: BookOpen, to: "/admin/exams" },
     { label: "Feedback", icon: MessageSquare, soon: true },
     { label: "Reports", icon: BarChart3, soon: true },
     { label: "Settings", icon: Settings, soon: true },
@@ -105,10 +105,10 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
             <Button variant="ghost" size="icon" aria-label="Notifications"><Bell /></Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-full border bg-card py-1 pl-1 pr-3 text-sm">
+                <Button variant="outline" className="flex items-center gap-2 rounded-full border bg-card py-1 pl-1 pr-3 text-sm">
                   <span className="grid size-7 place-items-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{name.charAt(0).toUpperCase()}</span>
                   <span className="hidden max-w-32 truncate sm:inline">{name}</span>
-                </button>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{me.email}</DropdownMenuLabel>
