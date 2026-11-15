@@ -1,5 +1,7 @@
 # ExamHub roadmap
 
+- [ ] Restore teacher dashboard access for the project owner and allow switching between assigned workspaces
+
 - [x] Phase 1 – Foundation: design system, landing, app shell, backend
 - [x] Phase 2 – Auth: sign up/in (email, Google, Lovable), reset password, roles, teacher approval, protected dashboards, admin user management
 - [x] Phase 3 – Teacher exam setup: exams CRUD, question bank, schedule/publish, teacher overview and corresponding admin exam oversight

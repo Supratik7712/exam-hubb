@@ -10,7 +10,7 @@ import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import type { AppRole, Me } from "@/lib/auth";
+import { homePathFor, type AppRole, type Me } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 
 type NavItem = { label: string; icon: LucideIcon; to?: string; soon?: boolean };
@@ -113,6 +113,11 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
               <DropdownMenuContent align="end" className="w-56">
                 <DropdownMenuLabel className="truncate">{me.email}</DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                {me.roles.filter(assignedRole => assignedRole !== role).map(assignedRole => (
+                  <DropdownMenuItem key={assignedRole} asChild>
+                    <Link to={homePathFor(me, assignedRole)}><LayoutDashboard className="size-4" /><span className="capitalize">{assignedRole} dashboard</span></Link>
+                  </DropdownMenuItem>
+                ))}
                 <DropdownMenuItem asChild><Link to="/profile">Profile</Link></DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut} className="text-destructive"><LogOut className="size-4" />Sign out</DropdownMenuItem>
               </DropdownMenuContent>

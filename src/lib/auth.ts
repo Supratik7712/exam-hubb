@@ -48,9 +48,9 @@ export function primaryRole(me: Me | null): AppRole | null {
   return null;
 }
 
-export function homePathFor(me: Me | null): "/admin" | "/teacher" | "/student" | "/pending" {
+export function homePathFor(me: Me | null, preferredRole?: AppRole): "/admin" | "/teacher" | "/student" | "/pending" {
   if (me?.profile?.account_status === "inactive") return "/pending";
-  const r = primaryRole(me);
+  const r = preferredRole && me?.roles.includes(preferredRole) ? preferredRole : primaryRole(me);
   if (r === "admin") return "/admin";
   if (r === "teacher") return "/teacher";
   if (r === "student") return "/student";
