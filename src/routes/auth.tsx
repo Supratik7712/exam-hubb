@@ -53,10 +53,10 @@ function AuthPage() {
   const goHome = async () => {
     const me = await fetchMe();
     qc.setQueryData(["me"], me);
-    if (me && loginRole !== primaryRole(me) && primaryRole(me)) {
+    if (me && !me.roles.includes(loginRole) && primaryRole(me)) {
       toast.info(`Signed in as ${primaryRole(me)} — redirecting to your dashboard.`);
     }
-    navigate({ to: homePathFor(me), replace: true });
+    navigate({ to: homePathFor(me, loginRole), replace: true });
   };
 
   // Already signed in (or returning from Google/Lovable): go to dashboard.
