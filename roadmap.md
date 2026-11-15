@@ -1,5 +1,7 @@
 # ExamHub roadmap
 
+- [ ] Correct returning-session and Google/Lovable sign-in redirects so teacher selection is not reset to Student
+
 - [x] Restore teacher dashboard access for the project owner and allow switching between assigned workspaces (dashboard, question bank, exam editor and mobile access verified)
 
 - [x] Phase 1 – Foundation: design system, landing, app shell, backend

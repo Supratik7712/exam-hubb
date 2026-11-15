@@ -35,6 +35,7 @@ use the editor.
 - Admin mutations go through SECURITY DEFINER RPCs that check `has_role(auth.uid(),'admin')` and write `audit_log` — keeps authorization server-side and auditable.
 - Role dashboards live at `/_authenticated/{student,teacher,admin}` with a `requireRole` beforeLoad; this is UX only, RLS is the real gate.
 - Sign-in role selection and workspace switching may target only roles assigned in user_roles; otherwise use the primary role — navigation must never grant privileges.
+- Preserve explicit OAuth role intent once in sessionStorage and navigate after provider completion; returning sessions without intent use the primary role, not the form default — prevents student redirects and iframe sign-in stalls.
 - Answer keys must never be readable by students during attempts; exam start/submit/evaluation run in server functions — scores are never trusted from the client.
 - Staff exam reads use authenticated server functions; exam writes use transactional role-checked RPCs, and bank questions are copied into exams — published exams cannot change when bank questions are edited.
 - Student roles have no question read policy; future attempt functions must return safe projections without answer keys — prevents early answer disclosure.
