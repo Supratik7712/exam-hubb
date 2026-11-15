@@ -1,6 +1,6 @@
 # ExamHub roadmap
 
-- [ ] Correct returning-session and Google/Lovable sign-in redirects so teacher selection is not reset to Student
+- [x] Correct returning-session and Google/Lovable sign-in redirects so teacher selection is not reset to Student (signed-in teacher return and refresh verified; external provider popup not exercised)
 
 - [x] Restore teacher dashboard access for the project owner and allow switching between assigned workspaces (dashboard, question bank, exam editor and mobile access verified)
 
