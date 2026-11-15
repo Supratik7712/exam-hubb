@@ -1,0 +1,37 @@
+import { useState } from "react";
+import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { Plus, Pencil, Trash2, FileQuestion } from "lucide-react";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Choice } from "./workspace-controls";
+import { EmptyState } from "./app-shell";
+import { workspaceQuery, saveQuestion, deleteQuestion } from "@/lib/exams.functions";
+import { questionSchema } from "@/lib/exam-rules";
+import type { z } from "zod";
+
+type Question = z.infer<typeof questionSchema>;
+const blank: Question = { topic: "", question_text: "", question_type: "MCQ", options: ["", "", "", ""], correct_answer: 0, marks: 1, difficulty: "Medium", explanation: "" };
+export function QuestionBank() {
+  const { data } = useSuspenseQuery(workspaceQuery("teacher"));
+  const qc = useQueryClient(); const save = useServerFn(saveQuestion); const remove = useServerFn(deleteQuestion);
+  const [editing, setEditing] = useState<Question | null>(null); const [search, setSearch] = useState(""); const [kind, setKind] = useState("All"); const [busy, setBusy] = useState(false); const [deleteId, setDeleteId] = useState<string | null>(null);
+  async function submit(e: React.FormEvent) {
+    e.preventDefault(); const parsed = questionSchema.safeParse(editing);
+    if (!parsed.success) { toast.error(parsed.error.issues[0]?.message ?? "Invalid question"); return; }
+    setBusy(true); try { await save({ data: parsed.data }); await qc.invalidateQueries({ queryKey: ["workspace"] }); setEditing(null); toast.success("Question saved"); } catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't save question"); } finally { setBusy(false); }
+  }
+  const rows = data.questions.filter(q => (kind === "All" || q.question_type === kind) && `${q.topic} ${q.question_text}`.toLowerCase().includes(search.toLowerCase()));
+  return <div className="space-y-6">
+    <div className="flex flex-wrap items-center justify-between gap-4"><div><h2 className="text-3xl font-bold">Question bank</h2><p className="mt-1 text-muted-foreground">{data.questions.length} approved questions</p></div><Button onClick={() => setEditing({ ...blank, options: [...blank.options] })}><Plus />Add question</Button></div>
+    <div className="flex flex-wrap items-end gap-3"><Input aria-label="Search questions" placeholder="Search questions or topics" className="max-w-sm" value={search} onChange={e => setSearch(e.target.value)} /><div className="w-40"><Choice label="Question type" value={kind} options={["All", "MCQ", "TRUE_FALSE"]} onChange={setKind} /></div></div>
+    {rows.length ? <div className="grid gap-4 xl:grid-cols-2">{rows.map(q => <article key={q.id} className="rounded-lg border bg-card p-5"><div className="flex flex-wrap gap-2"><Badge variant="secondary">{q.question_type === "MCQ" ? "MCQ" : "True / False"}</Badge><Badge variant="outline">{q.difficulty}</Badge><span className="ml-auto text-sm text-muted-foreground">{q.marks} marks</span></div><h3 className="mt-4 break-words font-semibold">{q.question_text}</h3><p className="mt-1 text-sm text-muted-foreground">{q.topic || "No topic"}</p><ol className="mt-3 space-y-1 text-sm">{Array.isArray(q.options) && q.options.map((o, i) => <li key={i} className={i === q.correct_answer ? "font-semibold text-success" : "text-muted-foreground"}>{String.fromCharCode(65 + i)}. {String(o)}{i === q.correct_answer ? " ✓" : ""}</li>)}</ol>{q.explanation && <p className="mt-3 break-words border-t pt-3 text-sm text-muted-foreground">{q.explanation}</p>}<div className="mt-4 flex justify-end gap-2"><Button variant="ghost" size="icon" aria-label={`Edit ${q.question_text}`} title="Edit question" onClick={() => { const parsed = questionSchema.safeParse(q); if (parsed.success) setEditing(parsed.data); }}><Pencil className="size-4" /></Button><Button variant="ghost" size="icon" aria-label={`Delete ${q.question_text}`} title="Delete question" onClick={() => setDeleteId(q.id)}><Trash2 className="size-4" /></Button></div></article>)}</div> : <EmptyState icon={FileQuestion} title="No questions found" text="Your question bank is empty for this selection." />}
+    <Dialog open={!!editing} onOpenChange={open => { if (!open && !busy) setEditing(null); }}><DialogContent className="max-h-[90dvh] max-w-2xl overflow-y-auto"><DialogTitle>{editing?.id ? "Edit question" : "Add question"}</DialogTitle><DialogDescription className="sr-only">Question details</DialogDescription>{editing && <form onSubmit={submit} className="space-y-4"><div className="grid gap-4 sm:grid-cols-2"><Choice label="Type" value={editing.question_type} options={["MCQ", "TRUE_FALSE"]} onChange={v => setEditing({ ...editing, question_type: v === "MCQ" ? "MCQ" : "TRUE_FALSE", options: v === "MCQ" ? ["", "", "", ""] : ["True", "False"], correct_answer: 0 })} /><Choice label="Difficulty" value={editing.difficulty} options={["Easy", "Medium", "Hard"]} onChange={v => setEditing({ ...editing, difficulty: v as Question["difficulty"] })} /></div><div className="space-y-2"><Label htmlFor="topic">Topic</Label><Input id="topic" value={editing.topic} onChange={e => setEditing({ ...editing, topic: e.target.value })} /></div><div className="space-y-2"><Label htmlFor="question">Question</Label><Textarea id="question" required value={editing.question_text} onChange={e => setEditing({ ...editing, question_text: e.target.value })} /></div><div className="space-y-2">{editing.options.map((option, i) => <div key={i} className="flex items-center gap-3"><input type="radio" name="correct" aria-label={`Correct answer ${i + 1}`} checked={editing.correct_answer === i} onChange={() => setEditing({ ...editing, correct_answer: i })} /><Input aria-label={`Option ${i + 1}`} required disabled={editing.question_type === "TRUE_FALSE"} value={option} onChange={e => setEditing({ ...editing, options: editing.options.map((o, j) => j === i ? e.target.value : o) })} /></div>)}</div><div className="space-y-2"><Label htmlFor="marks">Marks</Label><Input id="marks" type="number" min="0.5" step="0.5" required value={editing.marks} onChange={e => setEditing({ ...editing, marks: Number(e.target.value) })} /></div><div className="space-y-2"><Label htmlFor="explanation">Explanation</Label><Textarea id="explanation" value={editing.explanation} onChange={e => setEditing({ ...editing, explanation: e.target.value })} /></div><Button disabled={busy} type="submit">{busy ? "Saving…" : "Save question"}</Button></form>}</DialogContent></Dialog>
+    <Dialog open={!!deleteId} onOpenChange={o => { if (!o) setDeleteId(null); }}><DialogContent><DialogTitle>Delete question?</DialogTitle><DialogDescription>Previously saved exams keep their own copy.</DialogDescription><Button variant="destructive" disabled={busy} onClick={async () => { if (!deleteId) return; setBusy(true); try { await remove({ data: { id: deleteId } }); await qc.invalidateQueries({ queryKey: ["workspace"] }); setDeleteId(null); } catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't delete"); } finally { setBusy(false); } }}>Delete question</Button></DialogContent></Dialog>
+  </div>;
+}
