@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { EmptyState } from "@/components/app-shell";
-import { useMe } from "@/lib/auth";
+import { awaitingTeacherApproval, useMe } from "@/lib/auth";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { pageHead } from "@/lib/page-head";
 
@@ -52,7 +52,7 @@ function UsersPage() {
   });
 
   const rows = (data ?? []).filter((u) => {
-    if (filter === "pending" && !(u.requested_role === "teacher" && u.account_status === "pending")) return false;
+    if (filter === "pending" && !awaitingTeacherApproval(u, u.roles)) return false;
     if (filter === "student" && u.requested_role !== "student") return false;
     if (filter === "teacher" && u.requested_role !== "teacher") return false;
     const s = q.toLowerCase();
@@ -87,7 +87,7 @@ function UsersPage() {
             </TableHeader>
             <TableBody>
               {rows.map((u) => {
-                const pending = u.requested_role === "teacher" && u.account_status === "pending";
+                const pending = awaitingTeacherApproval(u, u.roles);
                 const self = u.id === me?.userId;
                 return (
                   <TableRow key={u.id}>

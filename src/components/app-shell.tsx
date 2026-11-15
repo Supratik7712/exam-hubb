@@ -118,6 +118,9 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
                     <Link to={homePathFor(me, assignedRole)}><LayoutDashboard className="size-4" /><span className="capitalize">{assignedRole} dashboard</span></Link>
                   </DropdownMenuItem>
                 ))}
+                {!me.roles.includes("teacher") && me.profile?.account_status === "active" && (
+                  <DropdownMenuItem asChild><Link to="/teacher-access"><LayoutDashboard className="size-4" />Teacher dashboard</Link></DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild><Link to="/profile">Profile</Link></DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut} className="text-destructive"><LogOut className="size-4" />Sign out</DropdownMenuItem>
               </DropdownMenuContent>

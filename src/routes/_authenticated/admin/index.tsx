@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Users, GraduationCap, ClipboardCheck, Hourglass, BookOpen } from "lucide-react";
+import { awaitingTeacherApproval } from "@/lib/auth";
 import { supabase } from "@/integrations/supabase/client";
 import { StatCard } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
@@ -20,14 +21,16 @@ function AdminHome() {
   const { data } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
-      const [total, roles, pending, audit] = await Promise.all([
+      const [total, roles, requests, audit] = await Promise.all([
         count((q) => q),
-        supabase.from("user_roles").select("role"),
-        count((q) => q.eq("requested_role", "teacher").eq("account_status", "pending")),
+        supabase.from("user_roles").select("user_id, role"),
+        supabase.from("profiles").select("id, requested_role, account_status").eq("requested_role", "teacher"),
         supabase.from("audit_log").select("*").order("created_at", { ascending: false }).limit(8),
       ]);
       if (roles.error) throw roles.error;
       if (audit.error) throw audit.error;
+      if (requests.error) throw requests.error;
+      const pending = requests.data.filter(p => awaitingTeacherApproval(p, roles.data.filter(r => r.user_id === p.id).map(r => r.role))).length;
       return { total, students: roles.data.filter(r => r.role === "student").length, teachers: roles.data.filter(r => r.role === "teacher").length, pending, audit: audit.data ?? [] };
     },
   });

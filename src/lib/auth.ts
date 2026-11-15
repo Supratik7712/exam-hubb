@@ -48,8 +48,15 @@ export function primaryRole(me: Me | null): AppRole | null {
   return null;
 }
 
-export function homePathFor(me: Me | null, preferredRole?: AppRole): "/admin" | "/teacher" | "/student" | "/pending" {
+/** A teacher request awaits an admin when teacher was requested but not yet granted. */
+export function awaitingTeacherApproval(profile: Pick<Profile, "requested_role" | "account_status"> | null, roles: readonly string[]): boolean {
+  return profile?.requested_role === "teacher" && profile.account_status !== "inactive" && !roles.includes("teacher");
+}
+
+export function homePathFor(me: Me | null, preferredRole?: AppRole): "/admin" | "/teacher" | "/student" | "/pending" | "/teacher-access" {
   if (me?.profile?.account_status === "inactive") return "/pending";
+  // Choosing Teacher without the role opens the request page; it never grants access.
+  if (preferredRole === "teacher" && me?.profile?.account_status === "active" && !me.roles.includes("teacher")) return "/teacher-access";
   const r = preferredRole && me?.roles.includes(preferredRole) ? preferredRole : primaryRole(me);
   if (r === "admin") return "/admin";
   if (r === "teacher") return "/teacher";
