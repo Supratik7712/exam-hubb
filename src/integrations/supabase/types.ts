@@ -41,6 +41,54 @@ export type Database = {
         }
         Relationships: []
       }
+      exams: {
+        Row: {
+          created_at: string
+          description: string
+          duration_minutes: number
+          end_at: string | null
+          id: string
+          settings: Json
+          start_at: string | null
+          status: string
+          subject: string
+          teacher_id: string
+          title: string
+          total_marks: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          duration_minutes?: number
+          end_at?: string | null
+          id?: string
+          settings?: Json
+          start_at?: string | null
+          status?: string
+          subject: string
+          teacher_id: string
+          title: string
+          total_marks?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          duration_minutes?: number
+          end_at?: string | null
+          id?: string
+          settings?: Json
+          start_at?: string | null
+          status?: string
+          subject?: string
+          teacher_id?: string
+          title?: string
+          total_marks?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_status: Database["public"]["Enums"]["account_status"]
@@ -77,6 +125,62 @@ export type Database = {
         }
         Relationships: []
       }
+      questions: {
+        Row: {
+          approval_status: string
+          correct_answer: number
+          created_at: string
+          created_by: string
+          difficulty: string
+          exam_id: string | null
+          explanation: string
+          id: string
+          marks: number
+          options: Json
+          question_text: string
+          question_type: string
+          topic: string
+        }
+        Insert: {
+          approval_status?: string
+          correct_answer: number
+          created_at?: string
+          created_by?: string
+          difficulty?: string
+          exam_id?: string | null
+          explanation?: string
+          id?: string
+          marks?: number
+          options: Json
+          question_text: string
+          question_type: string
+          topic?: string
+        }
+        Update: {
+          approval_status?: string
+          correct_answer?: number
+          created_at?: string
+          created_by?: string
+          difficulty?: string
+          exam_id?: string | null
+          explanation?: string
+          id?: string
+          marks?: number
+          options?: Json
+          question_text?: string
+          question_type?: string
+          topic?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
@@ -101,6 +205,7 @@ export type Database = {
     }
     Functions: {
       admin_approve_teacher: { Args: { _user_id: string }; Returns: undefined }
+      admin_grant_admin: { Args: { _user_id: string }; Returns: undefined }
       admin_set_account_status: {
         Args: {
           _status: Database["public"]["Enums"]["account_status"]
@@ -114,6 +219,14 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      manage_exam: {
+        Args: { _action: string; _id: string }
+        Returns: undefined
+      }
+      save_exam: {
+        Args: { _exam: Json; _question_ids: string[] }
+        Returns: string
       }
     }
     Enums: {
