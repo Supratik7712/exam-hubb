@@ -54,7 +54,7 @@ function AuthPage() {
   const goHome = async (preferredRole?: LoginRole) => {
     const me = await fetchMe();
     qc.setQueryData(["me"], me);
-    if (preferredRole && me && !me.roles.includes(preferredRole) && primaryRole(me)) {
+    if (preferredRole && preferredRole !== "teacher" && me && !me.roles.includes(preferredRole) && primaryRole(me)) {
       toast.info(`Signed in as ${primaryRole(me)} — redirecting to your dashboard.`);
     }
     await navigate({ to: homePathFor(me, preferredRole), replace: true });
