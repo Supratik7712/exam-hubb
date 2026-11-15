@@ -62,7 +62,7 @@ function AuthPage() {
 
   // Already signed in (or returning from Google/Lovable): go to dashboard.
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => { if (data.user) return goHome(takeSignInRole()); }).catch((error: Error) => toast.error(error.message));
+    supabase.auth.getUser().then(async ({ data }) => { if (data.user) await goHome(takeSignInRole()); }).catch((error: Error) => toast.error(error.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
