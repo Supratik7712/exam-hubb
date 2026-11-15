@@ -74,7 +74,7 @@ function AuthPage() {
       password: String(fd.get("password")),
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     await goHome();
   }
 
@@ -94,8 +94,8 @@ function AuthPage() {
       options: { emailRedirectTo: window.location.origin + "/auth", data: { ...meta, requested_role: signupRole } },
     });
     setBusy(false);
-    if (error) return toast.error(error.message);
-    if (data.session) return goHome();
+    if (error) { toast.error(error.message); return; }
+    if (data.session) { await goHome(); return; }
     setSentTo(email);
   }
 
@@ -105,7 +105,7 @@ function AuthPage() {
     setBusy(true);
     const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + "/reset-password" });
     setBusy(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setSentTo(email);
   }
 

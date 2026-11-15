@@ -34,7 +34,7 @@ function ProfilePage() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const parsed = schema.safeParse(Object.fromEntries(new FormData(e.currentTarget)));
-    if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    if (!parsed.success) { toast.error(parsed.error.issues[0]?.message ?? "Invalid input"); return; }
     setBusy(true);
     const { error } = await supabase.from("profiles").update({
       full_name: parsed.data.full_name,
@@ -42,7 +42,7 @@ function ProfilePage() {
       contact_number: parsed.data.contact_number || null,
     }).eq("id", me!.userId);
     setBusy(false);
-    if (error) return toast.error(error.code === "23505" ? "That username is taken" : error.message);
+    if (error) { toast.error(error.code === "23505" ? "That username is taken" : error.message); return; }
     toast.success("Profile saved");
     qc.invalidateQueries({ queryKey: ["me"] });
   }

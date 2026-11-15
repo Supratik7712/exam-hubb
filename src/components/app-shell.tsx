@@ -46,7 +46,7 @@ const NAV: Record<AppRole, NavItem[]> = {
   ],
 };
 
-function SideNav({ role, onNavigate }: { role: AppRole; onNavigate?: () => void }) {
+function SideNav({ role, onNavigate }: { role: AppRole; onNavigate?: (() => void) | undefined }) {
   return (
     <nav className="flex flex-1 flex-col gap-1 px-3">
       {NAV[role].map((item) =>
