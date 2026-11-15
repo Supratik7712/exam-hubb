@@ -3,8 +3,9 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { BookOpen, CheckCircle2, Percent, Bell, CalendarClock } from "lucide-react";
 import { StatCard, EmptyState } from "@/components/app-shell";
 import { meQuery } from "@/lib/auth";
+import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/student/")({ component: StudentHome });
+export const Route = createFileRoute("/_authenticated/student/")({ head: () => pageHead("Student dashboard", "Your upcoming exams, results and notifications on ExamHub."), component: StudentHome });
 
 function StudentHome() {
   const { data: me } = useSuspenseQuery(meQuery);

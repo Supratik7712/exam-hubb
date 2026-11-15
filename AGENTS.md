@@ -31,7 +31,9 @@ use the editor.
 
 ## Project rules
 - Roles live only in `public.user_roles` (enum student/teacher/admin), checked via `has_role()`; never derive privileges from profile fields or user metadata — prevents privilege escalation.
-- Signup trigger grants only `student`; teachers start `pending` with no role until an admin approves via `admin_approve_teacher` RPC; admins are provisioned manually — public signup can never create elevated roles.
+- Signup trigger grants only `student`; teachers start `pending` with no role until approved; bootstrap admins are manually provisioned and subsequent grants use the audited `admin_grant_admin` RPC — public signup never creates elevated roles.
 - Admin mutations go through SECURITY DEFINER RPCs that check `has_role(auth.uid(),'admin')` and write `audit_log` — keeps authorization server-side and auditable.
 - Role dashboards live at `/_authenticated/{student,teacher,admin}` with a `requireRole` beforeLoad; this is UX only, RLS is the real gate.
 - Answer keys must never be readable by students during attempts; exam start/submit/evaluation run in server functions — scores are never trusted from the client.
+- Staff exam reads use authenticated server functions; exam writes use transactional role-checked RPCs, and bank questions are copied into exams — published exams cannot change when bank questions are edited.
+- Student roles have no question read policy; future attempt functions must return safe projections without answer keys — prevents early answer disclosure.

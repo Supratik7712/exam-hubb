@@ -5,9 +5,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { meQuery, homePathFor } from "@/lib/auth";
+import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/pending")({
-  head: () => ({ meta: [{ title: "Account pending – ExamHub" }] }),
+  head: () => pageHead("Account status", "Check your ExamHub account approval and access status."),
   component: Pending,
 });
 

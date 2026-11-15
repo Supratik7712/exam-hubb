@@ -1,0 +1,41 @@
+CREATE TABLE public.exams (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), teacher_id uuid NOT NULL, title text NOT NULL, subject text NOT NULL, description text NOT NULL DEFAULT '', duration_minutes integer NOT NULL DEFAULT 30 CHECK(duration_minutes > 0), start_at timestamptz, end_at timestamptz, total_marks numeric NOT NULL DEFAULT 0, status text NOT NULL DEFAULT 'draft' CHECK(status IN ('draft','scheduled','active','completed')), settings jsonb NOT NULL DEFAULT '{}', created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT ON public.exams TO authenticated; GRANT ALL ON public.exams TO service_role;
+ALTER TABLE public.exams ENABLE ROW LEVEL SECURITY;
+CREATE POLICY exam_staff_read ON public.exams FOR SELECT TO authenticated USING ((teacher_id=auth.uid() AND public.has_role(auth.uid(),'teacher')) OR public.has_role(auth.uid(),'admin'));
+CREATE TABLE public.questions (id uuid PRIMARY KEY DEFAULT gen_random_uuid(), exam_id uuid REFERENCES public.exams(id), created_by uuid NOT NULL DEFAULT auth.uid(), topic text NOT NULL DEFAULT '', question_text text NOT NULL, question_type text NOT NULL CHECK(question_type IN ('MCQ','TRUE_FALSE')), options jsonb NOT NULL, correct_answer integer NOT NULL, marks numeric NOT NULL DEFAULT 1 CHECK(marks>0), difficulty text NOT NULL DEFAULT 'Medium' CHECK(difficulty IN ('Easy','Medium','Hard')), explanation text NOT NULL DEFAULT '', approval_status text NOT NULL DEFAULT 'approved', created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT,INSERT,UPDATE,DELETE ON public.questions TO authenticated; GRANT ALL ON public.questions TO service_role;
+ALTER TABLE public.questions ENABLE ROW LEVEL SECURITY;
+CREATE POLICY question_owner_read ON public.questions FOR SELECT TO authenticated USING(created_by=auth.uid() AND public.has_role(auth.uid(),'teacher'));
+CREATE POLICY question_bank_create ON public.questions FOR INSERT TO authenticated WITH CHECK(created_by=auth.uid() AND exam_id IS NULL AND public.has_role(auth.uid(),'teacher') AND EXISTS(SELECT 1 FROM public.profiles WHERE id=auth.uid() AND account_status='active'));
+CREATE POLICY question_bank_update ON public.questions FOR UPDATE TO authenticated USING(created_by=auth.uid() AND exam_id IS NULL AND public.has_role(auth.uid(),'teacher')) WITH CHECK(created_by=auth.uid() AND exam_id IS NULL AND public.has_role(auth.uid(),'teacher'));
+CREATE POLICY question_bank_delete ON public.questions FOR DELETE TO authenticated USING(created_by=auth.uid() AND exam_id IS NULL AND public.has_role(auth.uid(),'teacher'));
+CREATE FUNCTION public.validate_question() RETURNS trigger LANGUAGE plpgsql SET search_path=public AS $$ BEGIN IF jsonb_typeof(NEW.options)<>'array' OR jsonb_array_length(NEW.options)<2 OR (NEW.question_type='TRUE_FALSE' AND NEW.options<>'["True", "False"]'::jsonb) OR NEW.correct_answer<0 OR NEW.correct_answer>=jsonb_array_length(NEW.options) OR length(trim(NEW.question_text))=0 THEN RAISE EXCEPTION 'Invalid question or answer options'; END IF; RETURN NEW; END $$;
+CREATE TRIGGER validate_question BEFORE INSERT OR UPDATE ON public.questions FOR EACH ROW EXECUTE FUNCTION public.validate_question();
+CREATE FUNCTION public.save_exam(_exam jsonb, _question_ids uuid[]) RETURNS uuid LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE eid uuid; st text; n integer; BEGIN
+IF NOT public.has_role(auth.uid(),'teacher') OR NOT EXISTS(SELECT 1 FROM public.profiles WHERE id=auth.uid() AND account_status='active') THEN RAISE EXCEPTION 'Not authorized'; END IF;
+eid:=NULLIF(_exam->>'id','')::uuid; st:=COALESCE(_exam->>'status','draft');
+IF st NOT IN ('draft','scheduled','active') THEN RAISE EXCEPTION 'Invalid status'; END IF;
+IF length(trim(COALESCE(_exam->>'title','')))=0 OR length(trim(COALESCE(_exam->>'subject','')))=0 THEN RAISE EXCEPTION 'Title and subject required'; END IF;
+IF eid IS NOT NULL THEN PERFORM 1 FROM public.exams WHERE id=eid AND teacher_id=auth.uid() AND status='draft' FOR UPDATE; IF NOT FOUND THEN RAISE EXCEPTION 'Only your drafts can be edited'; END IF; END IF;
+SELECT count(*) INTO n FROM public.questions WHERE id=ANY(_question_ids) AND created_by=auth.uid() AND exam_id IS NULL AND approval_status='approved';
+IF n<>cardinality(_question_ids) THEN RAISE EXCEPTION 'Select approved questions from your bank'; END IF;
+IF st<>'draft' THEN IF n=0 OR NULLIF(_exam->>'start_at','') IS NULL OR NULLIF(_exam->>'end_at','') IS NULL THEN RAISE EXCEPTION 'Questions and schedule required before publishing'; END IF; IF (_exam->>'end_at')::timestamptz<=now() OR (_exam->>'end_at')::timestamptz<=(_exam->>'start_at')::timestamptz THEN RAISE EXCEPTION 'End time must be future and after start time'; END IF; st:=CASE WHEN (_exam->>'start_at')::timestamptz>now() THEN 'scheduled' ELSE 'active' END; END IF;
+IF eid IS NULL THEN INSERT INTO public.exams(teacher_id,title,subject) VALUES(auth.uid(),_exam->>'title',_exam->>'subject') RETURNING id INTO eid; END IF;
+UPDATE public.exams SET title=trim(_exam->>'title'),subject=trim(_exam->>'subject'),description=COALESCE(_exam->>'description',''),duration_minutes=(_exam->>'duration_minutes')::integer,start_at=NULLIF(_exam->>'start_at','')::timestamptz,end_at=NULLIF(_exam->>'end_at','')::timestamptz,status=st,settings=COALESCE(_exam->'settings','{}'::jsonb),updated_at=now() WHERE id=eid;
+DELETE FROM public.questions WHERE exam_id=eid;
+INSERT INTO public.questions(exam_id,created_by,topic,question_text,question_type,options,correct_answer,marks,difficulty,explanation) SELECT eid,auth.uid(),topic,question_text,question_type,options,correct_answer,marks,difficulty,explanation FROM public.questions WHERE id=ANY(_question_ids) AND exam_id IS NULL;
+UPDATE public.exams SET total_marks=(SELECT COALESCE(sum(marks),0) FROM public.questions WHERE exam_id=eid) WHERE id=eid; RETURN eid; END $$;
+CREATE FUNCTION public.manage_exam(_id uuid,_action text) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ DECLARE e public.exams; BEGIN
+SELECT * INTO e FROM public.exams WHERE id=_id FOR UPDATE; IF NOT FOUND THEN RAISE EXCEPTION 'Exam not found'; END IF;
+IF NOT EXISTS(SELECT 1 FROM public.profiles WHERE id=auth.uid() AND account_status='active') OR NOT (public.has_role(auth.uid(),'admin') OR (public.has_role(auth.uid(),'teacher') AND e.teacher_id=auth.uid())) THEN RAISE EXCEPTION 'Not authorized'; END IF;
+IF _action='delete' AND e.status='draft' AND e.teacher_id=auth.uid() THEN DELETE FROM public.questions WHERE exam_id=_id; DELETE FROM public.exams WHERE id=_id;
+ELSIF _action='close' AND e.status IN ('scheduled','active') THEN UPDATE public.exams SET status='completed',updated_at=now() WHERE id=_id;
+ELSE RAISE EXCEPTION 'Action not allowed for this exam'; END IF;
+IF public.has_role(auth.uid(),'admin') THEN INSERT INTO public.audit_log(actor_id,action,target_id) VALUES(auth.uid(),'exam_'||_action,_id); END IF; END $$;
+CREATE FUNCTION public.admin_grant_admin(_user_id uuid) RETURNS void LANGUAGE plpgsql SECURITY DEFINER SET search_path=public AS $$ BEGIN
+IF NOT public.has_role(auth.uid(),'admin') OR NOT EXISTS(SELECT 1 FROM public.profiles WHERE id=auth.uid() AND account_status='active') THEN RAISE EXCEPTION 'Not authorized'; END IF;
+IF NOT EXISTS(SELECT 1 FROM public.profiles WHERE id=_user_id AND account_status='active') THEN RAISE EXCEPTION 'An active registered account is required'; END IF;
+INSERT INTO public.user_roles(user_id,role) VALUES(_user_id,'admin') ON CONFLICT DO NOTHING;
+INSERT INTO public.audit_log(actor_id,action,target_id) VALUES(auth.uid(),'admin_granted',_user_id); END $$;
+REVOKE ALL ON FUNCTION public.save_exam(jsonb,uuid[]),public.manage_exam(uuid,text),public.admin_grant_admin(uuid) FROM PUBLIC,anon;
+GRANT EXECUTE ON FUNCTION public.save_exam(jsonb,uuid[]),public.manage_exam(uuid,text),public.admin_grant_admin(uuid) TO authenticated;

@@ -9,13 +9,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { meQuery, primaryRole } from "@/lib/auth";
+import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/profile")({
   beforeLoad: async ({ context }) => {
     const me = await context.queryClient.ensureQueryData(meQuery);
     if (!primaryRole(me) || me?.profile?.account_status !== "active") throw redirect({ to: "/pending" });
   },
-  head: () => ({ meta: [{ title: "Profile – ExamHub" }] }),
+  head: () => pageHead("Profile", "Manage your ExamHub name, username and contact details."),
   component: ProfilePage,
 });
 
