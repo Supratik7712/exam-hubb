@@ -13,13 +13,18 @@ export interface Me {
 }
 
 export async function fetchMe(): Promise<Me | null> {
-  const { data: userData } = await supabase.auth.getUser();
-  const user = userData.user;
+  // The protected layout validates the user; this read is only for UI and
+  // still reads profiles and roles through authenticated database policies.
+  const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError) throw sessionError;
+  const user = sessionData.session?.user;
   if (!user) return null;
-  const [{ data: profile }, { data: roles }] = await Promise.all([
+  const [{ data: profile, error: profileError }, { data: roles, error: rolesError }] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("user_roles").select("role").eq("user_id", user.id),
   ]);
+  if (profileError) throw profileError;
+  if (rolesError) throw rolesError;
   return {
     userId: user.id,
     email: user.email ?? null,

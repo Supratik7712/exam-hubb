@@ -7,16 +7,22 @@ import { examSchema, questionSchema } from "./exam-rules";
 export const getWorkspace = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator(z.object({ role: z.enum(["teacher", "admin"]) }))
   .handler(async ({ data, context }) => {
-    const { data: allowed } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: data.role });
-    const { data: profile } = await context.supabase.from("profiles").select("account_status").eq("id", context.userId).single();
+    const [{ data: allowed, error: roleError }, { data: profile, error: profileError }] = await Promise.all([
+      context.supabase.rpc("has_role", { _user_id: context.userId, _role: data.role }),
+      context.supabase.from("profiles").select("account_status").eq("id", context.userId).single(),
+    ]);
+    if (roleError) throw roleError;
+    if (profileError) throw profileError;
     if (!allowed || profile?.account_status !== "active") throw new Error("Not authorized");
-    const { data: exams, error } = await context.supabase.from("exams").select("*").order("created_at", { ascending: false });
+    const [{ data: exams, error }, { data: questions, error: qError }] = await Promise.all([
+      context.supabase.from("exams").select("*").order("created_at", { ascending: false }),
+      data.role === "teacher" ? context.supabase.from("questions").select("*").is("exam_id", null).order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
+    ]);
     if (error) throw error;
-    const { data: questions, error: qError } = data.role === "teacher" ? await context.supabase.from("questions").select("*").is("exam_id", null).order("created_at", { ascending: false }) : { data: [], error: null };
     if (qError) throw qError;
     return { exams: exams ?? [], questions: questions ?? [] };
   });
-export const workspaceQuery = (role: "teacher" | "admin") => queryOptions({ queryKey: ["workspace", role], queryFn: () => getWorkspace({ data: { role } }) });
+export const workspaceQuery = (role: "teacher" | "admin") => queryOptions({ queryKey: ["workspace", role], staleTime: 30_000, queryFn: () => getWorkspace({ data: { role } }) });
 export const saveQuestion = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(questionSchema).handler(async ({ data, context }) => {
   const { id, ...values } = data;
   const { error } = id ? await context.supabase.from("questions").update(values).eq("id", id).eq("created_by", context.userId).is("exam_id", null) : await context.supabase.from("questions").insert({ ...values, created_by: context.userId });

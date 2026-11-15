@@ -130,13 +130,25 @@ function RootComponent() {
   const router = useRouter();
 
   useEffect(() => {
-    const { data } = supabase.auth.onAuthStateChange((event) => {
+    let identity: string | null | undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      const nextIdentity = session?.user.id ?? null;
+      if (event === "INITIAL_SESSION") { identity = nextIdentity; return; }
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      if (event === "SIGNED_OUT") queryClient.clear();
-      else queryClient.invalidateQueries();
-      router.invalidate();
+      if (event === "SIGNED_IN" && identity === nextIdentity) return;
+      const switchedAccount = identity !== undefined && identity !== nextIdentity;
+      identity = nextIdentity;
+      // Auth callbacks run while the auth lock is held. Refetching here can
+      // wait on that same lock forever; schedule work after it is released.
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (event === "SIGNED_OUT" || switchedAccount) queryClient.clear();
+        else void queryClient.invalidateQueries();
+        void router.invalidate();
+      }, 0);
     });
-    return () => data.subscription.unsubscribe();
+    return () => { clearTimeout(timer); data.subscription.unsubscribe(); };
   }, [queryClient, router]);
 
   return (
