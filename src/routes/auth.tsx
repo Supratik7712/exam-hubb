@@ -12,6 +12,7 @@ import { Logo } from "@/components/logo";
 import { ProviderButtons } from "@/components/provider-buttons";
 import { fetchMe, homePathFor, primaryRole } from "@/lib/auth";
 import { cn } from "@/lib/utils";
+import { takeSignInRole } from "@/lib/signin-intent";
 
 const searchSchema = z.object({ mode: z.enum(["signin", "signup", "forgot"]).optional() });
 
@@ -50,18 +51,18 @@ function AuthPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sentTo, setSentTo] = useState<string | null>(null);
 
-  const goHome = async () => {
+  const goHome = async (preferredRole?: LoginRole) => {
     const me = await fetchMe();
     qc.setQueryData(["me"], me);
-    if (me && !me.roles.includes(loginRole) && primaryRole(me)) {
+    if (preferredRole && me && !me.roles.includes(preferredRole) && primaryRole(me)) {
       toast.info(`Signed in as ${primaryRole(me)} — redirecting to your dashboard.`);
     }
-    navigate({ to: homePathFor(me, loginRole), replace: true });
+    await navigate({ to: homePathFor(me, preferredRole), replace: true });
   };
 
   // Already signed in (or returning from Google/Lovable): go to dashboard.
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => { if (data.user) goHome(); });
+    supabase.auth.getUser().then(async ({ data }) => { if (data.user) await goHome(takeSignInRole()); }).catch((error: Error) => toast.error(error.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -75,7 +76,7 @@ function AuthPage() {
     });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
-    await goHome();
+    await goHome(loginRole);
   }
 
   async function onSignUp(e: React.FormEvent<HTMLFormElement>) {
@@ -162,7 +163,7 @@ function AuthPage() {
               <div className="space-y-1.5"><Label htmlFor="password">Password</Label><Input id="password" name="password" type="password" />{err("password")}</div>
               <Button className="w-full" disabled={busy}>{busy && <Loader2 className="animate-spin" />}Create account</Button>
               <Divider />
-              <ProviderButtons />
+              <ProviderButtons onSuccess={() => goHome()} />
               <p className="text-center text-xs text-muted-foreground">Signing up with Google or Lovable creates a student account.</p>
             </form>
           ) : (
@@ -182,7 +183,7 @@ function AuthPage() {
               </div>
               <Button className="w-full" disabled={busy}>{busy && <Loader2 className="animate-spin" />}Sign in as {loginRole}</Button>
               <Divider />
-              <ProviderButtons />
+              <ProviderButtons role={loginRole} onSuccess={() => goHome(loginRole)} />
             </form>
           )}
         </div>
