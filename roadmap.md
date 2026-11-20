@@ -18,3 +18,4 @@
 - [ ] Phase 8 – AI question generation (teacher approval) + AI recommendations
 - [ ] Phase 9 – Certificates (eligibility + PDF + verification code)
 - [ ] Phase 10 – QA, demo data, docs
+- [x] Short answer questions with word limit + sample DSA/aptitude paper

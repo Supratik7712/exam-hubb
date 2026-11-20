@@ -136,10 +136,12 @@ export type Database = {
           explanation: string
           id: string
           marks: number
+          model_answer: string
           options: Json
           question_text: string
           question_type: string
           topic: string
+          word_limit: number | null
         }
         Insert: {
           approval_status?: string
@@ -151,10 +153,12 @@ export type Database = {
           explanation?: string
           id?: string
           marks?: number
+          model_answer?: string
           options: Json
           question_text: string
           question_type: string
           topic?: string
+          word_limit?: number | null
         }
         Update: {
           approval_status?: string
@@ -166,10 +170,12 @@ export type Database = {
           explanation?: string
           id?: string
           marks?: number
+          model_answer?: string
           options?: Json
           question_text?: string
           question_type?: string
           topic?: string
+          word_limit?: number | null
         }
         Relationships: [
           {
