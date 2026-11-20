@@ -11,8 +11,8 @@
 - [x] Grant supratiksaha2022s@gmail.com initial admin access (confirmed account; verified through admin pages)
 - [x] Reduce slow loading and preview stalls: remove duplicate user checks, defer auth callback refetches, cache workspace reads and parallelize requests; signed-in navigation and sign-out verified
 - [x] Enable existing admins to grant admin access to registered teammates
-- [ ] Phase 4 – Student exam flow: instructions, timed attempt, autosave, palette, auto-submit
-- [ ] Phase 5 – Server evaluation & results (student + teacher views)
+- [x] Phase 4 – Student exam flow: instructions, timed attempt, autosave, palette, auto-submit
+- [x] Phase 5 – Server evaluation & results (student + teacher views, short-answer marking)
 - [ ] Phase 6 – Admin: all exams, reports, feedback review, settings
 - [ ] Phase 7 – Analytics, feedback, activity logs
 - [ ] Phase 8 – AI question generation (teacher approval) + AI recommendations

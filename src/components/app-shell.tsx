@@ -18,8 +18,8 @@ type NavItem = { label: string; icon: LucideIcon; to?: string; soon?: boolean };
 const NAV: Record<AppRole, NavItem[]> = {
   student: [
     { label: "Dashboard", icon: LayoutDashboard, to: "/student" },
-    { label: "Available exams", icon: BookOpen, soon: true },
-    { label: "Results", icon: ClipboardList, soon: true },
+    { label: "Available exams", icon: BookOpen, to: "/student/exams" },
+    { label: "Results", icon: ClipboardList, to: "/student/results" },
     { label: "Performance", icon: BarChart3, soon: true },
     { label: "Recommendations", icon: Sparkles, soon: true },
     { label: "Certificates", icon: Award, soon: true },
@@ -31,7 +31,7 @@ const NAV: Record<AppRole, NavItem[]> = {
     { label: "Exams", icon: BookOpen, to: "/teacher/exams" },
     { label: "Question bank", icon: FileQuestion, to: "/teacher/questions" },
     { label: "AI generator", icon: Sparkles, soon: true },
-    { label: "Results", icon: ClipboardList, soon: true },
+    { label: "Results", icon: ClipboardList, to: "/teacher/results" },
     { label: "Monitoring", icon: Activity, soon: true },
     { label: "Profile", icon: UserCircle, to: "/profile" },
   ],

@@ -4,7 +4,7 @@ import { AppShell } from "@/components/app-shell";
 import { meQuery } from "@/lib/auth";
 import { requireRole } from "@/lib/role-guard";
 
-const TITLES: Record<string, string> = { "/teacher": "Teacher dashboard", "/teacher/exams": "Exam management", "/teacher/questions": "Question bank" };
+const TITLES: Record<string, string> = { "/teacher": "Teacher dashboard", "/teacher/exams": "Exam management", "/teacher/questions": "Question bank", "/teacher/results": "Results" };
 
 export const Route = createFileRoute("/_authenticated/teacher")({
   beforeLoad: ({ context }) => requireRole(context.queryClient, "teacher"),

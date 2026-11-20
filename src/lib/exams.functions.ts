@@ -20,7 +20,13 @@ export const getWorkspace = createServerFn({ method: "POST" }).middleware([requi
     ]);
     if (error) throw error;
     if (qError) throw qError;
-    return { exams: exams ?? [], questions: questions ?? [] };
+    const { data: attempts } = await context.supabase.from("exam_attempts").select("exam_id, score, total_marks, status");
+    const stats: Record<string, { attempts: number; avg: number | null }> = {};
+    for (const a of attempts ?? []) {
+      const s = (stats[a.exam_id] ??= { attempts: 0, avg: null }); const pct = a.total_marks > 0 ? (a.score / a.total_marks) * 100 : 0;
+      s.avg = a.status === "in_progress" ? s.avg : Math.round((((s.avg ?? 0) * s.attempts) + pct) / (s.attempts + 1)); s.attempts += 1;
+    }
+    return { exams: exams ?? [], questions: questions ?? [], stats };
   });
 export const workspaceQuery = (role: "teacher" | "admin") => queryOptions({ queryKey: ["workspace", role], staleTime: 30_000, queryFn: () => getWorkspace({ data: { role } }) });
 export const saveQuestion = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(questionSchema).handler(async ({ data, context }) => {

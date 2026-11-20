@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      attempt_answers: {
+        Row: {
+          answer_text: string
+          attempt_id: string
+          id: string
+          marked_for_review: boolean
+          marks_awarded: number | null
+          question_id: string
+          selected_option: number | null
+          updated_at: string
+        }
+        Insert: {
+          answer_text?: string
+          attempt_id: string
+          id?: string
+          marked_for_review?: boolean
+          marks_awarded?: number | null
+          question_id: string
+          selected_option?: number | null
+          updated_at?: string
+        }
+        Update: {
+          answer_text?: string
+          attempt_id?: string
+          id?: string
+          marked_for_review?: boolean
+          marks_awarded?: number | null
+          question_id?: string
+          selected_option?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "attempt_answers_attempt_id_fkey"
+            columns: ["attempt_id"]
+            isOneToOne: false
+            referencedRelation: "exam_attempts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "attempt_answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       audit_log: {
         Row: {
           action: string
@@ -40,6 +88,50 @@ export type Database = {
           target_id?: string | null
         }
         Relationships: []
+      }
+      exam_attempts: {
+        Row: {
+          deadline: string
+          exam_id: string
+          id: string
+          score: number
+          started_at: string
+          status: string
+          student_id: string
+          submitted_at: string | null
+          total_marks: number
+        }
+        Insert: {
+          deadline: string
+          exam_id: string
+          id?: string
+          score?: number
+          started_at?: string
+          status?: string
+          student_id: string
+          submitted_at?: string | null
+          total_marks?: number
+        }
+        Update: {
+          deadline?: string
+          exam_id?: string
+          id?: string
+          score?: number
+          started_at?: string
+          status?: string
+          student_id?: string
+          submitted_at?: string | null
+          total_marks?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exam_attempts_exam_id_fkey"
+            columns: ["exam_id"]
+            isOneToOne: false
+            referencedRelation: "exams"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       exams: {
         Row: {
@@ -210,6 +302,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      _finalize_attempt: { Args: { _attempt_id: string }; Returns: undefined }
+      _finalize_expired: { Args: { _student: string }; Returns: undefined }
       admin_approve_teacher: { Args: { _user_id: string }; Returns: undefined }
       admin_grant_admin: { Args: { _user_id: string }; Returns: undefined }
       admin_set_account_status: {
@@ -217,6 +311,11 @@ export type Database = {
           _status: Database["public"]["Enums"]["account_status"]
           _user_id: string
         }
+        Returns: undefined
+      }
+      get_attempt: { Args: { _attempt_id: string }; Returns: Json }
+      grade_short_answer: {
+        Args: { _answer_id: string; _marks: number }
         Returns: undefined
       }
       has_role: {
@@ -231,10 +330,25 @@ export type Database = {
         Returns: undefined
       }
       request_teacher_access: { Args: never; Returns: undefined }
+      save_answer: {
+        Args: {
+          _attempt_id: string
+          _question_id: string
+          _review: boolean
+          _selected: number
+          _text: string
+        }
+        Returns: undefined
+      }
       save_exam: {
         Args: { _exam: Json; _question_ids: string[] }
         Returns: string
       }
+      staff_attempt_detail: { Args: { _attempt_id: string }; Returns: Json }
+      staff_exam_attempts: { Args: { _exam_id: string }; Returns: Json }
+      start_attempt: { Args: { _exam_id: string }; Returns: string }
+      student_exams: { Args: never; Returns: Json }
+      submit_attempt: { Args: { _attempt_id: string }; Returns: undefined }
     }
     Enums: {
       account_status: "active" | "pending" | "inactive"

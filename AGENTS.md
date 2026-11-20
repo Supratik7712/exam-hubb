@@ -41,3 +41,4 @@ use the editor.
 - Student roles have no question read policy; future attempt functions must return safe projections without answer keys — prevents early answer disclosure.
 - Schedule auth-triggered cache work outside the auth callback and ignore repeated same-user sign-in events — avoids auth-lock deadlocks and focus-driven reloads.
 - Use short-lived Query caches for workspace reads and parallel independent server reads — reduces repeated network round trips without changing server authorization.
+- Exam attempts start, save, submit and score only through SECURITY DEFINER RPCs called from server functions; students never get correct answers until submitted and the exam releases results — keeps answer keys and scoring server-side.
