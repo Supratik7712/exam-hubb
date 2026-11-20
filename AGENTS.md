@@ -42,3 +42,5 @@ use the editor.
 - Schedule auth-triggered cache work outside the auth callback and ignore repeated same-user sign-in events — avoids auth-lock deadlocks and focus-driven reloads.
 - Use short-lived Query caches for workspace reads and parallel independent server reads — reduces repeated network round trips without changing server authorization.
 - Exam attempts start, save, submit and score only through SECURITY DEFINER RPCs called from server functions; students never get correct answers until submitted and the exam releases results — keeps answer keys and scoring server-side.
+- AI calls run only in authenticated server functions through the Lovable AI Gateway with strict JSON schemas; AI-generated questions are never saved until a teacher approves each one — keeps keys server-side and humans in control.
+- Pass mark lives in the single-row app_settings table (admin-only RPC updates) and is used by results, certificates and reports — one source of truth.

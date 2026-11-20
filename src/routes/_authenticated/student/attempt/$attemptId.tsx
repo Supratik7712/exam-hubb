@@ -11,6 +11,8 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { attemptQuery, saveAnswer, submitAttempt, type Attempt, type AttemptQuestion } from "@/lib/attempts.functions";
 import { secondsLeft, formatClock, percentOf, passed } from "@/lib/attempt-rules";
 import { pageHead } from "@/lib/page-head";
+import { useQuery } from "@tanstack/react-query";
+import { settingsQuery } from "@/lib/extras.functions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/student/attempt/$attemptId")({
@@ -130,6 +132,7 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
 }
 
 function ResultScreen({ attempt }: { attempt: Attempt }) {
+  const passMark = useQuery(settingsQuery).data?.pass_percent ?? 40;
   const graded = attempt.status === "graded"; const score = attempt.score ?? 0;
   return <div className="mx-auto max-w-3xl space-y-6">
     <div className="rounded-2xl border bg-card p-8 text-center shadow-soft">
@@ -137,7 +140,7 @@ function ResultScreen({ attempt }: { attempt: Attempt }) {
       <h2 className="mt-1 break-words text-2xl font-bold">{attempt.exam.title}</h2>
       <p className="mt-6 font-display text-5xl font-extrabold">{score}<span className="text-2xl text-muted-foreground"> / {attempt.total_marks}</span></p>
       <p className="mt-2 text-muted-foreground">{percentOf(score, attempt.total_marks)}%</p>
-      <div className="mt-4">{graded ? <Badge variant={passed(score, attempt.total_marks) ? "default" : "destructive"}>{passed(score, attempt.total_marks) ? "Pass" : "Fail"}</Badge> : <Badge variant="secondary">Short answers awaiting teacher marking</Badge>}</div>
+      <div className="mt-4">{graded ? <Badge variant={passed(score, attempt.total_marks, passMark) ? "default" : "destructive"}>{passed(score, attempt.total_marks, passMark) ? "Pass" : "Fail"}</Badge> : <Badge variant="secondary">Short answers awaiting teacher marking</Badge>}</div>
       <div className="mt-6 flex justify-center gap-2"><Button asChild variant="outline"><Link to="/student/results">All results</Link></Button><Button asChild><Link to="/student/exams">Available exams</Link></Button></div>
     </div>
     {attempt.review ? <div className="space-y-3"><h3 className="text-lg font-bold">Answer review</h3>{attempt.questions.map((q, i) => <article key={q.id} className="rounded-lg border bg-card p-5">

@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_settings: {
+        Row: {
+          allow_teacher_requests: boolean
+          announcement: string
+          id: number
+          pass_percent: number
+          platform_name: string
+          updated_at: string
+        }
+        Insert: {
+          allow_teacher_requests?: boolean
+          announcement?: string
+          id?: number
+          pass_percent?: number
+          platform_name?: string
+          updated_at?: string
+        }
+        Update: {
+          allow_teacher_requests?: boolean
+          announcement?: string
+          id?: number
+          pass_percent?: number
+          platform_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       attempt_answers: {
         Row: {
           answer_text: string
@@ -181,6 +208,39 @@ export type Database = {
         }
         Relationships: []
       }
+      feedback: {
+        Row: {
+          admin_note: string
+          category: string
+          created_at: string
+          id: string
+          message: string
+          rating: number | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          admin_note?: string
+          category?: string
+          created_at?: string
+          id?: string
+          message: string
+          rating?: number | null
+          status?: string
+          user_id?: string
+        }
+        Update: {
+          admin_note?: string
+          category?: string
+          created_at?: string
+          id?: string
+          message?: string
+          rating?: number | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_status: Database["public"]["Enums"]["account_status"]
@@ -306,10 +366,24 @@ export type Database = {
       _finalize_expired: { Args: { _student: string }; Returns: undefined }
       admin_approve_teacher: { Args: { _user_id: string }; Returns: undefined }
       admin_grant_admin: { Args: { _user_id: string }; Returns: undefined }
+      admin_report: { Args: never; Returns: Json }
       admin_set_account_status: {
         Args: {
           _status: Database["public"]["Enums"]["account_status"]
           _user_id: string
+        }
+        Returns: undefined
+      }
+      admin_update_feedback: {
+        Args: { _id: string; _note: string; _status: string }
+        Returns: undefined
+      }
+      admin_update_settings: {
+        Args: {
+          _allow: boolean
+          _announcement: string
+          _name: string
+          _pass: number
         }
         Returns: undefined
       }
@@ -347,8 +421,11 @@ export type Database = {
       staff_attempt_detail: { Args: { _attempt_id: string }; Returns: Json }
       staff_exam_attempts: { Args: { _exam_id: string }; Returns: Json }
       start_attempt: { Args: { _exam_id: string }; Returns: string }
+      student_certificates: { Args: never; Returns: Json }
       student_exams: { Args: never; Returns: Json }
       submit_attempt: { Args: { _attempt_id: string }; Returns: undefined }
+      teacher_live_attempts: { Args: never; Returns: Json }
+      verify_certificate: { Args: { _code: string }; Returns: Json }
     }
     Enums: {
       account_status: "active" | "pending" | "inactive"

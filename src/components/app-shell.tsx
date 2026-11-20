@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { settingsQuery } from "@/lib/extras.functions";
 import {
   LayoutDashboard, BookOpen, ClipboardList, BarChart3, MessageSquare, Award, Sparkles, Users, FileQuestion,
   Activity, Settings, UserCircle, LogOut, Menu, Bell, type LucideIcon,
@@ -20,28 +21,28 @@ const NAV: Record<AppRole, NavItem[]> = {
     { label: "Dashboard", icon: LayoutDashboard, to: "/student" },
     { label: "Available exams", icon: BookOpen, to: "/student/exams" },
     { label: "Results", icon: ClipboardList, to: "/student/results" },
-    { label: "Performance", icon: BarChart3, soon: true },
-    { label: "Recommendations", icon: Sparkles, soon: true },
-    { label: "Certificates", icon: Award, soon: true },
-    { label: "Feedback", icon: MessageSquare, soon: true },
+    { label: "Performance", icon: BarChart3, to: "/student/performance" },
+    { label: "Recommendations", icon: Sparkles, to: "/student/recommendations" },
+    { label: "Certificates", icon: Award, to: "/student/certificates" },
+    { label: "Feedback", icon: MessageSquare, to: "/student/feedback" },
     { label: "Profile", icon: UserCircle, to: "/profile" },
   ],
   teacher: [
     { label: "Dashboard", icon: LayoutDashboard, to: "/teacher" },
     { label: "Exams", icon: BookOpen, to: "/teacher/exams" },
     { label: "Question bank", icon: FileQuestion, to: "/teacher/questions" },
-    { label: "AI generator", icon: Sparkles, soon: true },
+    { label: "AI generator", icon: Sparkles, to: "/teacher/ai-generator" },
     { label: "Results", icon: ClipboardList, to: "/teacher/results" },
-    { label: "Monitoring", icon: Activity, soon: true },
+    { label: "Monitoring", icon: Activity, to: "/teacher/monitoring" },
     { label: "Profile", icon: UserCircle, to: "/profile" },
   ],
   admin: [
     { label: "Overview", icon: LayoutDashboard, to: "/admin" },
     { label: "Users", icon: Users, to: "/admin/users" },
     { label: "All exams", icon: BookOpen, to: "/admin/exams" },
-    { label: "Feedback", icon: MessageSquare, soon: true },
-    { label: "Reports", icon: BarChart3, soon: true },
-    { label: "Settings", icon: Settings, soon: true },
+    { label: "Feedback", icon: MessageSquare, to: "/admin/feedback" },
+    { label: "Reports", icon: BarChart3, to: "/admin/reports" },
+    { label: "Settings", icon: Settings, to: "/admin/settings" },
     { label: "Profile", icon: UserCircle, to: "/profile" },
   ],
 };
@@ -71,6 +72,7 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
   const [open, setOpen] = useState(false);
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const announcement = useQuery(settingsQuery).data?.announcement;
   const name = me.profile?.full_name || me.email || "Account";
 
   async function signOut() {
@@ -127,7 +129,7 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
             </DropdownMenu>
           </div>
         </header>
-        <main className={cn("flex-1 p-4 md:p-8")}>{children}</main>
+        <main className={cn("flex-1 p-4 md:p-8")}>{announcement && <div role="status" className="mb-6 rounded-xl border bg-accent px-4 py-3 text-sm text-accent-foreground">{announcement}</div>}{children}</main>
       </div>
     </div>
   );

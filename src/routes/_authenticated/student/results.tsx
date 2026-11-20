@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { studentExamsQuery } from "@/lib/attempts.functions";
 import { percentOf, passed } from "@/lib/attempt-rules";
 import { pageHead } from "@/lib/page-head";
+import { useQuery } from "@tanstack/react-query";
+import { settingsQuery } from "@/lib/extras.functions";
 
 export const Route = createFileRoute("/_authenticated/student/results")({
   head: () => pageHead("My results", "Scores and reviews of your submitted ExamHub exams."),
@@ -16,6 +18,7 @@ export const Route = createFileRoute("/_authenticated/student/results")({
 
 function Results() {
   const { data } = useSuspenseQuery(studentExamsQuery);
+  const passMark = useQuery(settingsQuery).data?.pass_percent ?? 40;
   const done = data.filter(e => e.attempt && e.attempt.status !== "in_progress");
   return <div className="space-y-6">
     <div><h2 className="text-3xl font-bold">Results</h2><p className="mt-1 text-muted-foreground">{done.length} submitted exams</p></div>
@@ -25,7 +28,7 @@ function Results() {
         <td className="p-3"><p className="font-medium">{e.title}</p><p className="text-xs text-muted-foreground">{e.subject}</p></td>
         <td className="p-3">{a.submitted_at ? new Date(a.submitted_at).toLocaleString() : "—"}</td>
         <td className="p-3 font-semibold">{a.score} / {a.total_marks} <span className="font-normal text-muted-foreground">({percentOf(a.score, a.total_marks)}%)</span></td>
-        <td className="p-3">{graded ? <Badge variant={passed(a.score, a.total_marks) ? "default" : "destructive"}>{passed(a.score, a.total_marks) ? "Pass" : "Fail"}</Badge> : <Badge variant="secondary">Awaiting marking</Badge>}</td>
+        <td className="p-3">{graded ? <Badge variant={passed(a.score, a.total_marks, passMark) ? "default" : "destructive"}>{passed(a.score, a.total_marks, passMark) ? "Pass" : "Fail"}</Badge> : <Badge variant="secondary">Awaiting marking</Badge>}</td>
         <td className="p-3 text-right"><Link className="font-medium text-primary underline-offset-4 hover:underline" to="/student/attempt/$attemptId" params={{ attemptId: a.id }}>View</Link></td>
       </tr>; })}</tbody></table></div>
       : <EmptyState icon={ClipboardList} title="No results yet" text="Your score appears here after you submit an exam." />}

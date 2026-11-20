@@ -20,14 +20,24 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedStudentRouteRouteImport } from './routes/_authenticated/student/route'
 import { Route as AuthenticatedTeacherRouteRouteImport } from './routes/_authenticated/teacher/route'
 import { Route as AuthenticatedTeacherAccessRouteImport } from './routes/_authenticated/teacher-access'
+import { Route as VerifyCodeRouteImport } from './routes/verify.$code'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminExamsRouteImport } from './routes/_authenticated/admin/exams'
+import { Route as AuthenticatedAdminFeedbackRouteImport } from './routes/_authenticated/admin/feedback'
+import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
+import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin/settings'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 import { Route as AuthenticatedStudentIndexRouteImport } from './routes/_authenticated/student/index'
+import { Route as AuthenticatedStudentCertificatesRouteImport } from './routes/_authenticated/student/certificates'
 import { Route as AuthenticatedStudentExamsRouteImport } from './routes/_authenticated/student/exams'
+import { Route as AuthenticatedStudentFeedbackRouteImport } from './routes/_authenticated/student/feedback'
+import { Route as AuthenticatedStudentPerformanceRouteImport } from './routes/_authenticated/student/performance'
+import { Route as AuthenticatedStudentRecommendationsRouteImport } from './routes/_authenticated/student/recommendations'
 import { Route as AuthenticatedStudentResultsRouteImport } from './routes/_authenticated/student/results'
 import { Route as AuthenticatedTeacherIndexRouteImport } from './routes/_authenticated/teacher/index'
+import { Route as AuthenticatedTeacherAiGeneratorRouteImport } from './routes/_authenticated/teacher/ai-generator'
 import { Route as AuthenticatedTeacherExamsRouteImport } from './routes/_authenticated/teacher/exams'
+import { Route as AuthenticatedTeacherMonitoringRouteImport } from './routes/_authenticated/teacher/monitoring'
 import { Route as AuthenticatedTeacherQuestionsRouteImport } from './routes/_authenticated/teacher/questions'
 import { Route as AuthenticatedTeacherResultsRouteImport } from './routes/_authenticated/teacher/results'
 import { Route as AuthenticatedStudentAttemptAttemptIdRouteImport } from './routes/_authenticated/student/attempt/$attemptId'
@@ -89,6 +99,11 @@ const AuthenticatedTeacherAccessRoute =
     path: '/teacher-access',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const VerifyCodeRoute = VerifyCodeRouteImport.update({
+  id: '/verify/$code',
+  path: '/verify/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -99,6 +114,24 @@ const AuthenticatedAdminExamsRoute = AuthenticatedAdminExamsRouteImport.update({
   path: '/exams',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminFeedbackRoute =
+  AuthenticatedAdminFeedbackRouteImport.update({
+    id: '/feedback',
+    path: '/feedback',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminReportsRoute =
+  AuthenticatedAdminReportsRouteImport.update({
+    id: '/reports',
+    path: '/reports',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsRoute =
+  AuthenticatedAdminSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   id: '/users',
   path: '/users',
@@ -110,10 +143,34 @@ const AuthenticatedStudentIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedStudentRouteRoute,
   } as any)
+const AuthenticatedStudentCertificatesRoute =
+  AuthenticatedStudentCertificatesRouteImport.update({
+    id: '/certificates',
+    path: '/certificates',
+    getParentRoute: () => AuthenticatedStudentRouteRoute,
+  } as any)
 const AuthenticatedStudentExamsRoute =
   AuthenticatedStudentExamsRouteImport.update({
     id: '/exams',
     path: '/exams',
+    getParentRoute: () => AuthenticatedStudentRouteRoute,
+  } as any)
+const AuthenticatedStudentFeedbackRoute =
+  AuthenticatedStudentFeedbackRouteImport.update({
+    id: '/feedback',
+    path: '/feedback',
+    getParentRoute: () => AuthenticatedStudentRouteRoute,
+  } as any)
+const AuthenticatedStudentPerformanceRoute =
+  AuthenticatedStudentPerformanceRouteImport.update({
+    id: '/performance',
+    path: '/performance',
+    getParentRoute: () => AuthenticatedStudentRouteRoute,
+  } as any)
+const AuthenticatedStudentRecommendationsRoute =
+  AuthenticatedStudentRecommendationsRouteImport.update({
+    id: '/recommendations',
+    path: '/recommendations',
     getParentRoute: () => AuthenticatedStudentRouteRoute,
   } as any)
 const AuthenticatedStudentResultsRoute =
@@ -128,10 +185,22 @@ const AuthenticatedTeacherIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedTeacherRouteRoute,
   } as any)
+const AuthenticatedTeacherAiGeneratorRoute =
+  AuthenticatedTeacherAiGeneratorRouteImport.update({
+    id: '/ai-generator',
+    path: '/ai-generator',
+    getParentRoute: () => AuthenticatedTeacherRouteRoute,
+  } as any)
 const AuthenticatedTeacherExamsRoute =
   AuthenticatedTeacherExamsRouteImport.update({
     id: '/exams',
     path: '/exams',
+    getParentRoute: () => AuthenticatedTeacherRouteRoute,
+  } as any)
+const AuthenticatedTeacherMonitoringRoute =
+  AuthenticatedTeacherMonitoringRouteImport.update({
+    id: '/monitoring',
+    path: '/monitoring',
     getParentRoute: () => AuthenticatedTeacherRouteRoute,
   } as any)
 const AuthenticatedTeacherQuestionsRoute =
@@ -164,11 +233,21 @@ export interface FileRoutesByFullPath {
   '/pending': typeof AuthenticatedPendingRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/teacher-access': typeof AuthenticatedTeacherAccessRoute
+  '/verify/$code': typeof VerifyCodeRoute
   '/admin/exams': typeof AuthenticatedAdminExamsRoute
+  '/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/admin/reports': typeof AuthenticatedAdminReportsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/student/certificates': typeof AuthenticatedStudentCertificatesRoute
   '/student/exams': typeof AuthenticatedStudentExamsRoute
+  '/student/feedback': typeof AuthenticatedStudentFeedbackRoute
+  '/student/performance': typeof AuthenticatedStudentPerformanceRoute
+  '/student/recommendations': typeof AuthenticatedStudentRecommendationsRoute
   '/student/results': typeof AuthenticatedStudentResultsRoute
+  '/teacher/ai-generator': typeof AuthenticatedTeacherAiGeneratorRoute
   '/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/teacher/monitoring': typeof AuthenticatedTeacherMonitoringRoute
   '/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/teacher/results': typeof AuthenticatedTeacherResultsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -184,11 +263,21 @@ export interface FileRoutesByTo {
   '/pending': typeof AuthenticatedPendingRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/teacher-access': typeof AuthenticatedTeacherAccessRoute
+  '/verify/$code': typeof VerifyCodeRoute
   '/admin/exams': typeof AuthenticatedAdminExamsRoute
+  '/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/admin/reports': typeof AuthenticatedAdminReportsRoute
+  '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/student/certificates': typeof AuthenticatedStudentCertificatesRoute
   '/student/exams': typeof AuthenticatedStudentExamsRoute
+  '/student/feedback': typeof AuthenticatedStudentFeedbackRoute
+  '/student/performance': typeof AuthenticatedStudentPerformanceRoute
+  '/student/recommendations': typeof AuthenticatedStudentRecommendationsRoute
   '/student/results': typeof AuthenticatedStudentResultsRoute
+  '/teacher/ai-generator': typeof AuthenticatedTeacherAiGeneratorRoute
   '/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/teacher/monitoring': typeof AuthenticatedTeacherMonitoringRoute
   '/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/teacher/results': typeof AuthenticatedTeacherResultsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -209,11 +298,21 @@ export interface FileRoutesById {
   '/_authenticated/pending': typeof AuthenticatedPendingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/teacher-access': typeof AuthenticatedTeacherAccessRoute
+  '/verify/$code': typeof VerifyCodeRoute
   '/_authenticated/admin/exams': typeof AuthenticatedAdminExamsRoute
+  '/_authenticated/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
+  '/_authenticated/admin/reports': typeof AuthenticatedAdminReportsRoute
+  '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/student/certificates': typeof AuthenticatedStudentCertificatesRoute
   '/_authenticated/student/exams': typeof AuthenticatedStudentExamsRoute
+  '/_authenticated/student/feedback': typeof AuthenticatedStudentFeedbackRoute
+  '/_authenticated/student/performance': typeof AuthenticatedStudentPerformanceRoute
+  '/_authenticated/student/recommendations': typeof AuthenticatedStudentRecommendationsRoute
   '/_authenticated/student/results': typeof AuthenticatedStudentResultsRoute
+  '/_authenticated/teacher/ai-generator': typeof AuthenticatedTeacherAiGeneratorRoute
   '/_authenticated/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/_authenticated/teacher/monitoring': typeof AuthenticatedTeacherMonitoringRoute
   '/_authenticated/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/_authenticated/teacher/results': typeof AuthenticatedTeacherResultsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -234,11 +333,21 @@ export interface FileRouteTypes {
     | '/pending'
     | '/profile'
     | '/teacher-access'
+    | '/verify/$code'
     | '/admin/exams'
+    | '/admin/feedback'
+    | '/admin/reports'
+    | '/admin/settings'
     | '/admin/users'
+    | '/student/certificates'
     | '/student/exams'
+    | '/student/feedback'
+    | '/student/performance'
+    | '/student/recommendations'
     | '/student/results'
+    | '/teacher/ai-generator'
     | '/teacher/exams'
+    | '/teacher/monitoring'
     | '/teacher/questions'
     | '/teacher/results'
     | '/admin/'
@@ -254,11 +363,21 @@ export interface FileRouteTypes {
     | '/pending'
     | '/profile'
     | '/teacher-access'
+    | '/verify/$code'
     | '/admin/exams'
+    | '/admin/feedback'
+    | '/admin/reports'
+    | '/admin/settings'
     | '/admin/users'
+    | '/student/certificates'
     | '/student/exams'
+    | '/student/feedback'
+    | '/student/performance'
+    | '/student/recommendations'
     | '/student/results'
+    | '/teacher/ai-generator'
     | '/teacher/exams'
+    | '/teacher/monitoring'
     | '/teacher/questions'
     | '/teacher/results'
     | '/admin'
@@ -278,11 +397,21 @@ export interface FileRouteTypes {
     | '/_authenticated/pending'
     | '/_authenticated/profile'
     | '/_authenticated/teacher-access'
+    | '/verify/$code'
     | '/_authenticated/admin/exams'
+    | '/_authenticated/admin/feedback'
+    | '/_authenticated/admin/reports'
+    | '/_authenticated/admin/settings'
     | '/_authenticated/admin/users'
+    | '/_authenticated/student/certificates'
     | '/_authenticated/student/exams'
+    | '/_authenticated/student/feedback'
+    | '/_authenticated/student/performance'
+    | '/_authenticated/student/recommendations'
     | '/_authenticated/student/results'
+    | '/_authenticated/teacher/ai-generator'
     | '/_authenticated/teacher/exams'
+    | '/_authenticated/teacher/monitoring'
     | '/_authenticated/teacher/questions'
     | '/_authenticated/teacher/results'
     | '/_authenticated/admin/'
@@ -296,6 +425,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  VerifyCodeRoute: typeof VerifyCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -377,6 +507,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTeacherAccessRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/verify/$code': {
+      id: '/verify/$code'
+      path: '/verify/$code'
+      fullPath: '/verify/$code'
+      preLoaderRoute: typeof VerifyCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/admin/': {
       id: '/_authenticated/admin/'
       path: '/'
@@ -389,6 +526,27 @@ declare module '@tanstack/react-router' {
       path: '/exams'
       fullPath: '/admin/exams'
       preLoaderRoute: typeof AuthenticatedAdminExamsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/feedback': {
+      id: '/_authenticated/admin/feedback'
+      path: '/feedback'
+      fullPath: '/admin/feedback'
+      preLoaderRoute: typeof AuthenticatedAdminFeedbackRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/reports': {
+      id: '/_authenticated/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AuthenticatedAdminReportsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/settings': {
+      id: '/_authenticated/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/users': {
@@ -405,11 +563,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentIndexRouteImport
       parentRoute: typeof AuthenticatedStudentRouteRoute
     }
+    '/_authenticated/student/certificates': {
+      id: '/_authenticated/student/certificates'
+      path: '/certificates'
+      fullPath: '/student/certificates'
+      preLoaderRoute: typeof AuthenticatedStudentCertificatesRouteImport
+      parentRoute: typeof AuthenticatedStudentRouteRoute
+    }
     '/_authenticated/student/exams': {
       id: '/_authenticated/student/exams'
       path: '/exams'
       fullPath: '/student/exams'
       preLoaderRoute: typeof AuthenticatedStudentExamsRouteImport
+      parentRoute: typeof AuthenticatedStudentRouteRoute
+    }
+    '/_authenticated/student/feedback': {
+      id: '/_authenticated/student/feedback'
+      path: '/feedback'
+      fullPath: '/student/feedback'
+      preLoaderRoute: typeof AuthenticatedStudentFeedbackRouteImport
+      parentRoute: typeof AuthenticatedStudentRouteRoute
+    }
+    '/_authenticated/student/performance': {
+      id: '/_authenticated/student/performance'
+      path: '/performance'
+      fullPath: '/student/performance'
+      preLoaderRoute: typeof AuthenticatedStudentPerformanceRouteImport
+      parentRoute: typeof AuthenticatedStudentRouteRoute
+    }
+    '/_authenticated/student/recommendations': {
+      id: '/_authenticated/student/recommendations'
+      path: '/recommendations'
+      fullPath: '/student/recommendations'
+      preLoaderRoute: typeof AuthenticatedStudentRecommendationsRouteImport
       parentRoute: typeof AuthenticatedStudentRouteRoute
     }
     '/_authenticated/student/results': {
@@ -426,11 +612,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTeacherIndexRouteImport
       parentRoute: typeof AuthenticatedTeacherRouteRoute
     }
+    '/_authenticated/teacher/ai-generator': {
+      id: '/_authenticated/teacher/ai-generator'
+      path: '/ai-generator'
+      fullPath: '/teacher/ai-generator'
+      preLoaderRoute: typeof AuthenticatedTeacherAiGeneratorRouteImport
+      parentRoute: typeof AuthenticatedTeacherRouteRoute
+    }
     '/_authenticated/teacher/exams': {
       id: '/_authenticated/teacher/exams'
       path: '/exams'
       fullPath: '/teacher/exams'
       preLoaderRoute: typeof AuthenticatedTeacherExamsRouteImport
+      parentRoute: typeof AuthenticatedTeacherRouteRoute
+    }
+    '/_authenticated/teacher/monitoring': {
+      id: '/_authenticated/teacher/monitoring'
+      path: '/monitoring'
+      fullPath: '/teacher/monitoring'
+      preLoaderRoute: typeof AuthenticatedTeacherMonitoringRouteImport
       parentRoute: typeof AuthenticatedTeacherRouteRoute
     }
     '/_authenticated/teacher/questions': {
@@ -459,6 +659,9 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminExamsRoute: typeof AuthenticatedAdminExamsRoute
+  AuthenticatedAdminFeedbackRoute: typeof AuthenticatedAdminFeedbackRoute
+  AuthenticatedAdminReportsRoute: typeof AuthenticatedAdminReportsRoute
+  AuthenticatedAdminSettingsRoute: typeof AuthenticatedAdminSettingsRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
@@ -466,6 +669,9 @@ interface AuthenticatedAdminRouteRouteChildren {
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
     AuthenticatedAdminExamsRoute: AuthenticatedAdminExamsRoute,
+    AuthenticatedAdminFeedbackRoute: AuthenticatedAdminFeedbackRoute,
+    AuthenticatedAdminReportsRoute: AuthenticatedAdminReportsRoute,
+    AuthenticatedAdminSettingsRoute: AuthenticatedAdminSettingsRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
@@ -476,7 +682,11 @@ const AuthenticatedAdminRouteRouteWithChildren =
   )
 
 interface AuthenticatedStudentRouteRouteChildren {
+  AuthenticatedStudentCertificatesRoute: typeof AuthenticatedStudentCertificatesRoute
   AuthenticatedStudentExamsRoute: typeof AuthenticatedStudentExamsRoute
+  AuthenticatedStudentFeedbackRoute: typeof AuthenticatedStudentFeedbackRoute
+  AuthenticatedStudentPerformanceRoute: typeof AuthenticatedStudentPerformanceRoute
+  AuthenticatedStudentRecommendationsRoute: typeof AuthenticatedStudentRecommendationsRoute
   AuthenticatedStudentResultsRoute: typeof AuthenticatedStudentResultsRoute
   AuthenticatedStudentIndexRoute: typeof AuthenticatedStudentIndexRoute
   AuthenticatedStudentAttemptAttemptIdRoute: typeof AuthenticatedStudentAttemptAttemptIdRoute
@@ -484,7 +694,13 @@ interface AuthenticatedStudentRouteRouteChildren {
 
 const AuthenticatedStudentRouteRouteChildren: AuthenticatedStudentRouteRouteChildren =
   {
+    AuthenticatedStudentCertificatesRoute:
+      AuthenticatedStudentCertificatesRoute,
     AuthenticatedStudentExamsRoute: AuthenticatedStudentExamsRoute,
+    AuthenticatedStudentFeedbackRoute: AuthenticatedStudentFeedbackRoute,
+    AuthenticatedStudentPerformanceRoute: AuthenticatedStudentPerformanceRoute,
+    AuthenticatedStudentRecommendationsRoute:
+      AuthenticatedStudentRecommendationsRoute,
     AuthenticatedStudentResultsRoute: AuthenticatedStudentResultsRoute,
     AuthenticatedStudentIndexRoute: AuthenticatedStudentIndexRoute,
     AuthenticatedStudentAttemptAttemptIdRoute:
@@ -497,7 +713,9 @@ const AuthenticatedStudentRouteRouteWithChildren =
   )
 
 interface AuthenticatedTeacherRouteRouteChildren {
+  AuthenticatedTeacherAiGeneratorRoute: typeof AuthenticatedTeacherAiGeneratorRoute
   AuthenticatedTeacherExamsRoute: typeof AuthenticatedTeacherExamsRoute
+  AuthenticatedTeacherMonitoringRoute: typeof AuthenticatedTeacherMonitoringRoute
   AuthenticatedTeacherQuestionsRoute: typeof AuthenticatedTeacherQuestionsRoute
   AuthenticatedTeacherResultsRoute: typeof AuthenticatedTeacherResultsRoute
   AuthenticatedTeacherIndexRoute: typeof AuthenticatedTeacherIndexRoute
@@ -505,7 +723,9 @@ interface AuthenticatedTeacherRouteRouteChildren {
 
 const AuthenticatedTeacherRouteRouteChildren: AuthenticatedTeacherRouteRouteChildren =
   {
+    AuthenticatedTeacherAiGeneratorRoute: AuthenticatedTeacherAiGeneratorRoute,
     AuthenticatedTeacherExamsRoute: AuthenticatedTeacherExamsRoute,
+    AuthenticatedTeacherMonitoringRoute: AuthenticatedTeacherMonitoringRoute,
     AuthenticatedTeacherQuestionsRoute: AuthenticatedTeacherQuestionsRoute,
     AuthenticatedTeacherResultsRoute: AuthenticatedTeacherResultsRoute,
     AuthenticatedTeacherIndexRoute: AuthenticatedTeacherIndexRoute,
@@ -544,6 +764,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  VerifyCodeRoute: VerifyCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

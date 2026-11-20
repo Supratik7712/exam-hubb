@@ -13,10 +13,10 @@
 - [x] Enable existing admins to grant admin access to registered teammates
 - [x] Phase 4 – Student exam flow: instructions, timed attempt, autosave, palette, auto-submit
 - [x] Phase 5 – Server evaluation & results (student + teacher views, short-answer marking)
-- [ ] Phase 6 – Admin: all exams, reports, feedback review, settings
-- [ ] Phase 7 – Analytics, feedback, activity logs
-- [ ] Phase 8 – AI question generation (teacher approval) + AI recommendations
-- [ ] Phase 9 – Certificates (eligibility + PDF + verification code)
+- [x] Phase 6 – Admin: feedback review, reports (CSV), settings (pass mark, announcement)
+- [x] Phase 7 – Student performance charts, feedback, teacher live monitoring
+- [x] Phase 8 – AI question generation (teacher approval) + AI study recommendations
+- [x] Phase 9 – Certificates (pass mark, printable, public verification code)
 - [ ] Phase 10 – QA, demo data, docs
 - [x] Short answer questions with word limit + sample DSA/aptitude paper
 - [x] Homepage FAQ section covering accounts, roles, question types and answer security
