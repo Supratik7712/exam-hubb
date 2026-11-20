@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ArrowRight, BarChart3, Award, Brain, Clock, ShieldCheck, Sparkles, GraduationCap, Users, ClipboardCheck,
+  ArrowRight, BarChart3, Award, Brain, Clock, ShieldCheck, Sparkles, GraduationCap, Users, ClipboardCheck, HelpCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Logo } from "@/components/logo";
 import { useMe, homePathFor } from "@/lib/auth";
 import hero from "@/assets/hero-exam.jpg";
@@ -36,6 +37,41 @@ const roles = [
   { icon: Users, name: "Admins", points: ["Approve teacher accounts", "Activate or deactivate users", "Platform-wide reports", "Review feedback"] },
 ];
 
+const faqs = [
+  {
+    q: "Who can use ExamHub?",
+    a: "Three kinds of accounts, each with its own dashboard. Students take exams and see their results, teachers build question banks and exam papers, and admins oversee users, approvals and the whole platform.",
+  },
+  {
+    q: "How do I sign in?",
+    a: "You can register with an email and password, or continue with Google or Lovable. If you forget your password, use the “Forgot password?” link on the sign-in page and we will email you a reset link.",
+  },
+  {
+    q: "I registered but I am not a teacher. How do I get teacher access?",
+    a: "Sign in, choose Teacher on the sign-in screen and click “Request teacher access”. An admin sees your request under Users → Pending and approves it. Once approved, the teacher dashboard opens for your account.",
+  },
+  {
+    q: "What kinds of questions can a teacher put in a paper?",
+    a: "Three patterns, chosen while writing each question: multiple choice (MCQ), true / false, and short answer — a sentence or a few lines, with a word limit you set. Teachers mark the correct answer for MCQ and true / false while building the paper.",
+  },
+  {
+    q: "Do students see the correct answers during an exam?",
+    a: "No. Answer keys stay on the server, so they are never sent to the student's browser during an attempt. Marks are calculated server-side, and you can review your responses after the result is out.",
+  },
+  {
+    q: "Can a teacher reuse questions across exams?",
+    a: "Yes. Save questions in your question bank and add them to any paper you build. Each exam keeps its own copy, so editing a bank question later never changes an exam that is already published.",
+  },
+  {
+    q: "Who can add more admins?",
+    a: "An existing admin can grant admin access to any registered user from the Users page. Every such change is recorded in the audit log, and public sign-up can never create an admin account.",
+  },
+  {
+    q: "What happens after an exam is submitted?",
+    a: "The paper is evaluated automatically on the server, the result is recorded, and performance insights — topic-wise accuracy, strengths and weak areas — follow for the student and the teacher.",
+  },
+];
+
 function Landing() {
   const { data: me } = useMe();
   return (
@@ -47,6 +83,7 @@ function Landing() {
             <a href="#features" className="hover:text-foreground">Features</a>
             <a href="#roles" className="hover:text-foreground">For your role</a>
             <a href="#how" className="hover:text-foreground">How it works</a>
+            <a href="#faq" className="hover:text-foreground">FAQ</a>
           </nav>
           <div className="flex items-center gap-2">
             {me ? (
@@ -128,6 +165,33 @@ function Landing() {
             </li>
           ))}
         </ol>
+      </section>
+
+      <section id="faq" className="bg-hero border-t border-border/60">
+        <div className="mx-auto max-w-3xl px-4 py-20">
+          <span className="inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
+            <HelpCircle className="size-3.5" /> Frequently asked questions
+          </span>
+          <h2 className="mt-5 text-3xl font-bold md:text-4xl">Questions, answered.</h2>
+          <p className="mt-3 max-w-xl text-muted-foreground">
+            Everything about accounts, roles, question types and how your answers are handled.
+          </p>
+
+          <div className="mt-10 rounded-2xl border bg-card px-6 shadow-soft">
+            <Accordion type="single" collapsible defaultValue={faqs[0].q}>
+              {faqs.map((item) => (
+                <AccordionItem key={item.q} value={item.q} className="last:border-b-0">
+                  <AccordionTrigger className="py-5 text-base font-semibold hover:no-underline">{item.q}</AccordionTrigger>
+                  <AccordionContent className="pb-5 text-sm leading-relaxed text-muted-foreground">{item.a}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+
+          <p className="mt-6 text-sm text-muted-foreground">
+            Can't find your answer? Sign in — account and teacher-access requests are handled inside ExamHub by your platform admins.
+          </p>
+        </div>
       </section>
 
       <footer className="border-t">
