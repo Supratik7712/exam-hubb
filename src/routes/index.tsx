@@ -37,9 +37,11 @@ const roles = [
   { icon: Users, name: "Admins", points: ["Approve teacher accounts", "Activate or deactivate users", "Platform-wide reports", "Review feedback"] },
 ];
 
+const FAQ_FIRST_QUESTION = "Who can use ExamHub?";
+
 const faqs = [
   {
-    q: "Who can use ExamHub?",
+    q: FAQ_FIRST_QUESTION,
     a: "Three kinds of accounts, each with its own dashboard. Students take exams and see their results, teachers build question banks and exam papers, and admins oversee users, approvals and the whole platform.",
   },
   {
@@ -178,7 +180,7 @@ function Landing() {
           </p>
 
           <div className="mt-10 rounded-2xl border bg-card px-6 shadow-soft">
-            <Accordion type="single" collapsible defaultValue={faqs[0].q}>
+            <Accordion type="single" collapsible defaultValue={FAQ_FIRST_QUESTION}>
               {faqs.map((item) => (
                 <AccordionItem key={item.q} value={item.q} className="last:border-b-0">
                   <AccordionTrigger className="py-5 text-base font-semibold hover:no-underline">{item.q}</AccordionTrigger>

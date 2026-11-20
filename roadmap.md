@@ -19,3 +19,4 @@
 - [ ] Phase 9 – Certificates (eligibility + PDF + verification code)
 - [ ] Phase 10 – QA, demo data, docs
 - [x] Short answer questions with word limit + sample DSA/aptitude paper
+- [x] Homepage FAQ section covering accounts, roles, question types and answer security
