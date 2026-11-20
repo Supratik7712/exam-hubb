@@ -25,8 +25,8 @@ export const getWorkspace = createServerFn({ method: "POST" }).middleware([requi
 export const workspaceQuery = (role: "teacher" | "admin") => queryOptions({ queryKey: ["workspace", role], staleTime: 30_000, queryFn: () => getWorkspace({ data: { role } }) });
 export const saveQuestion = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(questionSchema).handler(async ({ data, context }) => {
   const { id, ...values } = data;
-  const { error } = id ? await context.supabase.from("questions").update(values).eq("id", id).eq("created_by", context.userId).is("exam_id", null) : await context.supabase.from("questions").insert({ ...values, created_by: context.userId });
-  if (error) throw error;
+  const { data: row, error } = id ? await context.supabase.from("questions").update(values).eq("id", id).eq("created_by", context.userId).is("exam_id", null).select("id").single() : await context.supabase.from("questions").insert({ ...values, created_by: context.userId }).select("id").single();
+  if (error) throw error; return row.id;
 });
 export const deleteQuestion = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(z.object({ id: z.string().uuid() })).handler(async ({ data, context }) => {
   const { error } = await context.supabase.from("questions").delete().eq("id", data.id).eq("created_by", context.userId).is("exam_id", null); if (error) throw error;
