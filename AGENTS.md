@@ -44,3 +44,4 @@ use the editor.
 - Exam attempts start, save, submit and score only through SECURITY DEFINER RPCs called from server functions; students never get correct answers until submitted and the exam releases results — keeps answer keys and scoring server-side.
 - AI calls run only in authenticated server functions through the Lovable AI Gateway with strict JSON schemas; AI-generated questions are never saved until a teacher approves each one — keeps keys server-side and humans in control.
 - Pass mark lives in the single-row app_settings table (admin-only RPC updates) and is used by results, certificates and reports — one source of truth.
+- Explicit exam leaving saves pending answers and finalizes the attempt through the existing submission RPC before navigation — prevents abandoned attempts from remaining resumable.

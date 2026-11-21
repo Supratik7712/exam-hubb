@@ -14,6 +14,7 @@ import { pageHead } from "@/lib/page-head";
 import { useQuery } from "@tanstack/react-query";
 import { settingsQuery } from "@/lib/extras.functions";
 import { cn } from "@/lib/utils";
+import { leaveExam } from "@/lib/leave-exam";
 
 export const Route = createFileRoute("/_authenticated/student/attempt/$attemptId")({
   head: () => pageHead("Exam", "Take your ExamHub exam."),
@@ -78,12 +79,25 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
     }
   }
   async function leave() {
+    if (submitted.current) return;
+    submitted.current = true;
     setSubmitting(true);
     try {
-      await Promise.all(Object.keys(pending.current).map(flush));
-      toast.success("Answers saved — you can continue this exam before time runs out");
-      void navigate({ to: "/student/exams" });
-    } catch { toast.error("Couldn't save your answers — please try again"); setSubmitting(false); }
+      await leaveExam(
+        async () => { await Promise.all(Object.keys(pending.current).map(flush)); },
+        async () => { await submit({ data: { id: attempt.id } }); },
+        async () => {
+          await qc.invalidateQueries({ queryKey: ["student-exams"] });
+          qc.removeQueries({ queryKey: ["attempt", attempt.id] });
+          toast.success("Exam ended — this attempt cannot be resumed");
+          await navigate({ to: "/student/exams" });
+        },
+      );
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Couldn't end the exam — please try again");
+      submitted.current = false;
+      setSubmitting(false);
+    }
   }
   useEffect(() => {
     const t = setInterval(() => {
@@ -142,8 +156,8 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
       </DialogContent>
     </Dialog>
     <Dialog open={leaving} onOpenChange={o => { if (!submitting) setLeaving(o); }}>
-      <DialogContent><DialogTitle>Leave this exam?</DialogTitle><DialogDescription>Your answers so far are saved and the timer keeps running. You can come back and continue from Available exams before time runs out — nothing is submitted yet.</DialogDescription>
-        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setLeaving(false)} disabled={submitting}>Stay in exam</Button><Button variant="destructive" onClick={() => void leave()} disabled={submitting}>{submitting ? "Saving…" : "Save & leave"}</Button></div>
+      <DialogContent><DialogTitle>Quit this exam?</DialogTitle><DialogDescription>This ends your current attempt and submits your answers so far. The timer stops and you cannot resume this attempt. You can start a new attempt later.</DialogDescription>
+        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setLeaving(false)} disabled={submitting}>Stay in exam</Button><Button variant="destructive" onClick={() => void leave()} disabled={submitting}>{submitting ? "Ending exam…" : "Quit exam"}</Button></div>
       </DialogContent>
     </Dialog>
   </div>;
