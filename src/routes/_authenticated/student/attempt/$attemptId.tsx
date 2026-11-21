@@ -1,9 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Clock, Flag, ChevronLeft, ChevronRight, CheckCircle2, XCircle } from "lucide-react";
+import { Clock, Flag, ChevronLeft, ChevronRight, CheckCircle2, XCircle, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AnswerBox } from "@/components/answer-box";
@@ -33,6 +33,7 @@ const answered = (a: Ans | undefined) => !!a && (a.selected_option != null || a.
 
 function ExamScreen({ attempt }: { attempt: Attempt }) {
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const save = useServerFn(saveAnswer);
   const submit = useServerFn(submitAttempt);
   const [loadedAt] = useState(() => Date.now());
@@ -41,6 +42,7 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
   const [answers, setAnswers] = useState<Record<string, Ans>>(() => Object.fromEntries(attempt.questions.map(q => [q.id, { selected_option: q.selected_option, answer_text: q.answer_text, marked_for_review: q.marked_for_review }])));
   const [saving, setSaving] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [confirm, setConfirm] = useState(false);
+  const [leaving, setLeaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const pending = useRef<Record<string, Ans>>({});
@@ -75,6 +77,14 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
       await Promise.all([qc.invalidateQueries({ queryKey: ["attempt", attempt.id] }), qc.invalidateQueries({ queryKey: ["student-exams"] })]);
     }
   }
+  async function leave() {
+    setSubmitting(true);
+    try {
+      await Promise.all(Object.keys(pending.current).map(flush));
+      toast.success("Answers saved — you can continue this exam before time runs out");
+      void navigate({ to: "/student/exams" });
+    } catch { toast.error("Couldn't save your answers — please try again"); setSubmitting(false); }
+  }
   useEffect(() => {
     const t = setInterval(() => {
       const s = secondsLeft(attempt.deadline, attempt.now, loadedAt); setLeft(s);
@@ -94,7 +104,10 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
     <section className="space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div><p className="text-sm text-muted-foreground">{attempt.exam.subject}</p><h2 className="break-words text-2xl font-bold">{attempt.exam.title}</h2></div>
-        <div className={cn("flex items-center gap-2 rounded-full border px-4 py-2 font-mono text-lg font-bold", left <= 60 ? "border-destructive text-destructive" : "bg-card")} aria-live="polite"><Clock className="size-5" />{formatClock(left)}</div>
+        <div className="flex items-center gap-2">
+          <div className={cn("flex items-center gap-2 rounded-full border px-4 py-2 font-mono text-lg font-bold", left <= 60 ? "border-destructive text-destructive" : "bg-card")} aria-live="polite"><Clock className="size-5" />{formatClock(left)}</div>
+          <Button variant="outline" onClick={() => setLeaving(true)} disabled={submitting}><LogOut className="size-4" />Leave exam</Button>
+        </div>
       </div>
       <article className="rounded-lg border bg-card p-6">
         <div className="flex flex-wrap items-center justify-between gap-2 text-sm text-muted-foreground"><span>Question {idx + 1} of {attempt.questions.length}</span><span>{q.marks} {q.marks === 1 ? "mark" : "marks"}</span></div>
@@ -126,6 +139,11 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
     <Dialog open={confirm} onOpenChange={o => { if (!submitting) setConfirm(o); }}>
       <DialogContent><DialogTitle>Submit your exam?</DialogTitle><DialogDescription>You answered {done} of {attempt.questions.length} questions. You can't change answers after submitting.</DialogDescription>
         <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setConfirm(false)} disabled={submitting}>Keep working</Button><Button onClick={() => void finish(false)} disabled={submitting}>{submitting ? "Submitting…" : "Submit"}</Button></div>
+      </DialogContent>
+    </Dialog>
+    <Dialog open={leaving} onOpenChange={o => { if (!submitting) setLeaving(o); }}>
+      <DialogContent><DialogTitle>Leave this exam?</DialogTitle><DialogDescription>Your answers so far are saved and the timer keeps running. You can come back and continue from Available exams before time runs out — nothing is submitted yet.</DialogDescription>
+        <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setLeaving(false)} disabled={submitting}>Stay in exam</Button><Button variant="destructive" onClick={() => void leave()} disabled={submitting}>{submitting ? "Saving…" : "Save & leave"}</Button></div>
       </DialogContent>
     </Dialog>
   </div>;
