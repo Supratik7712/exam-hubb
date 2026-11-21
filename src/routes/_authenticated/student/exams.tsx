@@ -20,7 +20,6 @@ export const Route = createFileRoute("/_authenticated/student/exams")({
 
 export function windowState(e: StudentExam, now = Date.now()) {
   if (e.attempt?.status === "in_progress") return "continue";
-  if (e.attempt) return "done";
   if (e.start_at && Date.parse(e.start_at) > now) return "upcoming";
   if (e.end_at && Date.parse(e.end_at) <= now) return "closed";
   return "open";
@@ -36,7 +35,7 @@ function StudentExams() {
     onSuccess: (attemptId) => navigate({ to: "/student/attempt/$attemptId", params: { attemptId } }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't start exam"),
   });
-  const rows = data.filter(e => windowState(e) !== "done");
+  const rows = data.filter(e => !(e.attempt && windowState(e) === "closed"));
   return <div className="space-y-6">
     <div><h2 className="text-3xl font-bold">Available exams</h2><p className="mt-1 text-muted-foreground">Open an exam to read the instructions, then start when you're ready.</p></div>
     {rows.length ? <div className="grid gap-4 xl:grid-cols-2">{rows.map(e => {
@@ -49,7 +48,7 @@ function StudentExams() {
         <p className="mt-3 flex items-start gap-2 text-sm text-muted-foreground"><Calendar className="mt-0.5 size-4 shrink-0" />{e.start_at ? new Date(e.start_at).toLocaleString() : "Anytime"}{e.end_at ? ` – ${new Date(e.end_at).toLocaleString()}` : ""}</p>
         <div className="mt-5 flex justify-end border-t pt-4">
           {st === "continue" ? <Button onClick={() => navigate({ to: "/student/attempt/$attemptId", params: { attemptId: e.attempt!.id } })}>Continue exam</Button>
-            : <Button disabled={st !== "open"} onClick={() => setIntro(e)}>{st === "upcoming" ? "Not open yet" : st === "closed" ? "Closed" : "View instructions"}</Button>}
+            : <Button disabled={st !== "open"} onClick={() => setIntro(e)}>{st === "upcoming" ? "Not open yet" : st === "closed" ? "Closed" : e.attempt ? "Take again" : "View instructions"}</Button>}
         </div>
       </article>;
     })}</div> : <EmptyState icon={BookOpen} title="No exams available" text="When a teacher publishes an exam, it will appear here. Finished exams are under Results." />}
@@ -62,7 +61,6 @@ function StudentExams() {
             <li>Your answers are saved automatically. You can come back and continue before time runs out.</li>
             <li>When time is up, the exam is submitted for you.</li>
             <li>Short answers have a word limit shown under the box.</li>
-            <li>You can take this exam only once.</li>
           </ul>
           <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setIntro(null)} disabled={begin.isPending}>Cancel</Button><Button onClick={() => begin.mutate(intro.id)} disabled={begin.isPending}>{begin.isPending ? "Starting…" : "Start exam"}</Button></div>
         </div>}

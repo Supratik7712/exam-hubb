@@ -16,11 +16,11 @@ export const questionSchema = z.object({
 });
 export const examSchema = z.object({
   id: z.string().uuid().optional(), title: z.string().trim().min(1).max(200), subject: z.string().trim().min(1).max(200), description: z.string().max(5000),
-  duration_minutes: z.number().int().positive(), start_at: z.string().nullable(), end_at: z.string().nullable(),
+  duration_minutes: z.number({ message: "Set the exam timer" }).int().min(1, "Timer must be at least 1 minute").max(1440, "Timer can be at most 24 hours"), start_at: z.string().nullable(), end_at: z.string().nullable(),
   status: z.enum(["draft", "scheduled", "active"]), question_ids: z.array(z.string().uuid()),
   settings: z.object({ randomize_questions: z.boolean(), randomize_options: z.boolean(), release_results: z.boolean() }),
 }).superRefine((e, ctx) => {
-  if (e.status !== "draft" && (!e.question_ids.length || !e.start_at || !e.end_at)) ctx.addIssue({ code: "custom", message: "Select questions and set a schedule before publishing" });
+  if (e.status !== "draft" && !e.question_ids.length) ctx.addIssue({ code: "custom", message: "Add questions before publishing" });
   if (e.start_at && e.end_at && Date.parse(e.end_at) <= Date.parse(e.start_at)) ctx.addIssue({ code: "custom", message: "End time must follow start time" });
 });
 export function examStatus(e: { status: string; start_at: string | null; end_at: string | null }, now = Date.now()) {

@@ -10,7 +10,10 @@ describe("exam setup rules", () => {
   it("accepts short answer with a 100 word limit", () => expect(questionSchema.safeParse({ ...question, question_type: "SHORT_ANSWER", options: [], correct_answer: -1, word_limit: 100 }).success).toBe(true));
   it("counts words", () => expect(countWords("  a quick   brown fox ")).toBe(4));
   it("allows empty drafts", () => expect(examSchema.safeParse(exam).success).toBe(true));
-  it("requires questions and timing before publishing", () => expect(examSchema.safeParse({ ...exam, status: "active" }).success).toBe(false));
+  it("requires questions before publishing", () => expect(examSchema.safeParse({ ...exam, status: "active" }).success).toBe(false));
+  it("allows publishing without a schedule", () => expect(examSchema.safeParse({ ...exam, status: "active", question_ids: ["11111111-1111-4111-8111-111111111111"] }).success).toBe(true));
+  it("lets the teacher set a 90 minute timer", () => expect(examSchema.safeParse({ ...exam, duration_minutes: 90 }).success).toBe(true));
+  it("rejects a timer of 0 minutes", () => expect(examSchema.safeParse({ ...exam, duration_minutes: 0 }).success).toBe(false));
   it("moves scheduled exams to active when start time arrives", () => expect(examStatus({ status: "scheduled", start_at: "2026-11-15T10:00:00Z", end_at: "2026-11-15T13:00:00Z" }, Date.parse("2026-11-15T12:00:00Z"))).toBe("active"));
   it("treats ended exams as completed", () => expect(examStatus({ status: "active", start_at: null, end_at: "2026-11-15T11:00:00Z" }, Date.parse("2026-11-15T12:00:00Z"))).toBe("completed"));
 });
