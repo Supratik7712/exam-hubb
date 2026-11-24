@@ -44,6 +44,6 @@ export const saveExam = createServerFn({ method: "POST" }).middleware([requireSu
   const { data: id, error } = await context.supabase.rpc("save_exam", { _exam: { ...exam, settings: { ...exam.settings, question_ids } }, _question_ids: question_ids });
   if (error) throw error; return id;
 });
-export const manageExam = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(z.object({ id: z.string().uuid(), action: z.enum(["close", "delete"]) })).handler(async ({ data, context }) => {
+export const manageExam = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(z.object({ id: z.string().uuid(), action: z.enum(["close", "delete", "remove"]) })).handler(async ({ data, context }) => {
   const { error } = await context.supabase.rpc("manage_exam", { _id: data.id, _action: data.action }); if (error) throw error;
 });
