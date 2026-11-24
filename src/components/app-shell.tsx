@@ -41,6 +41,7 @@ const NAV: Record<AppRole, NavItem[]> = {
   admin: [
     { label: "Overview", icon: LayoutDashboard, to: "/admin" },
     { label: "Users", icon: Users, to: "/admin/users" },
+    { label: "Activity log", icon: Activity, to: "/admin/activity" },
     { label: "All exams", icon: BookOpen, to: "/admin/exams" },
     { label: "Feedback", icon: MessageSquare, to: "/admin/feedback" },
     { label: "Reports", icon: BarChart3, to: "/admin/reports" },

@@ -71,6 +71,13 @@
       "when": 1795527633193,
       "tag": "0009_proctoring_notifications_materials",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1795528491880,
+      "tag": "0010_exam_candidate_details_admin_activity",
+      "breakpoints": true
     }
   ]
 }

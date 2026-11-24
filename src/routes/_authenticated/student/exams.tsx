@@ -7,6 +7,8 @@ import { BookOpen, Clock, Calendar, ListChecks } from "lucide-react";
 import { EmptyState } from "@/components/app-shell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { studentExamsQuery, startAttempt, type StudentExam } from "@/lib/attempts.functions";
 import { pageHead } from "@/lib/page-head";
@@ -30,8 +32,9 @@ function StudentExams() {
   const navigate = useNavigate();
   const start = useServerFn(startAttempt);
   const [intro, setIntro] = useState<StudentExam | null>(null);
+  const [name, setName] = useState(""); const [roll, setRoll] = useState("");
   const begin = useMutation({
-    mutationFn: (examId: string) => start({ data: { id: examId } }),
+    mutationFn: (examId: string) => start({ data: { id: examId, name, roll } }),
     onSuccess: (attemptId) => navigate({ to: "/student/attempt/$attemptId", params: { attemptId } }),
     onError: (e) => toast.error(e instanceof Error ? e.message : "Couldn't start exam"),
   });
@@ -62,7 +65,11 @@ function StudentExams() {
             <li>When time is up, the exam is submitted for you.</li>
             <li>Short answers have a word limit shown under the box.</li>
           </ul>
-          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setIntro(null)} disabled={begin.isPending}>Cancel</Button><Button onClick={() => begin.mutate(intro.id)} disabled={begin.isPending}>{begin.isPending ? "Starting…" : "Start exam"}</Button></div>
+          <div className="grid gap-3 rounded-md border p-3 sm:grid-cols-2">
+            <div className="space-y-1"><Label htmlFor="cand-name">Your full name *</Label><Input id="cand-name" value={name} maxLength={120} onChange={e => setName(e.target.value)} placeholder="As on your college ID" /></div>
+            <div className="space-y-1"><Label htmlFor="cand-roll">Roll / ID number (optional)</Label><Input id="cand-roll" value={roll} maxLength={60} onChange={e => setRoll(e.target.value)} /></div>
+          </div>
+          <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setIntro(null)} disabled={begin.isPending}>Cancel</Button><Button onClick={() => begin.mutate(intro.id)} disabled={begin.isPending || name.trim().length < 2}>{begin.isPending ? "Starting…" : "Start exam"}</Button></div>
         </div>}
       </DialogContent>
     </Dialog>

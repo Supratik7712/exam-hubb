@@ -22,6 +22,7 @@ import { Route as AuthenticatedTeacherRouteRouteImport } from './routes/_authent
 import { Route as AuthenticatedTeacherAccessRouteImport } from './routes/_authenticated/teacher-access'
 import { Route as VerifyCodeRouteImport } from './routes/verify.$code'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
 import { Route as AuthenticatedAdminExamsRouteImport } from './routes/_authenticated/admin/exams'
 import { Route as AuthenticatedAdminFeedbackRouteImport } from './routes/_authenticated/admin/feedback'
 import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
@@ -110,6 +111,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminActivityRoute =
+  AuthenticatedAdminActivityRouteImport.update({
+    id: '/activity',
+    path: '/activity',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminExamsRoute = AuthenticatedAdminExamsRouteImport.update({
   id: '/exams',
   path: '/exams',
@@ -241,6 +248,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof AuthenticatedProfileRoute
   '/teacher-access': typeof AuthenticatedTeacherAccessRoute
   '/verify/$code': typeof VerifyCodeRoute
+  '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRoute
@@ -272,6 +280,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/teacher-access': typeof AuthenticatedTeacherAccessRoute
   '/verify/$code': typeof VerifyCodeRoute
+  '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRoute
@@ -308,6 +317,7 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/teacher-access': typeof AuthenticatedTeacherAccessRoute
   '/verify/$code': typeof VerifyCodeRoute
+  '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/_authenticated/admin/exams': typeof AuthenticatedAdminExamsRoute
   '/_authenticated/admin/feedback': typeof AuthenticatedAdminFeedbackRoute
   '/_authenticated/admin/reports': typeof AuthenticatedAdminReportsRoute
@@ -344,6 +354,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/teacher-access'
     | '/verify/$code'
+    | '/admin/activity'
     | '/admin/exams'
     | '/admin/feedback'
     | '/admin/reports'
@@ -375,6 +386,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/teacher-access'
     | '/verify/$code'
+    | '/admin/activity'
     | '/admin/exams'
     | '/admin/feedback'
     | '/admin/reports'
@@ -410,6 +422,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/teacher-access'
     | '/verify/$code'
+    | '/_authenticated/admin/activity'
     | '/_authenticated/admin/exams'
     | '/_authenticated/admin/feedback'
     | '/_authenticated/admin/reports'
@@ -532,6 +545,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/activity': {
+      id: '/_authenticated/admin/activity'
+      path: '/activity'
+      fullPath: '/admin/activity'
+      preLoaderRoute: typeof AuthenticatedAdminActivityRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/exams': {
@@ -678,6 +698,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminActivityRoute: typeof AuthenticatedAdminActivityRoute
   AuthenticatedAdminExamsRoute: typeof AuthenticatedAdminExamsRoute
   AuthenticatedAdminFeedbackRoute: typeof AuthenticatedAdminFeedbackRoute
   AuthenticatedAdminReportsRoute: typeof AuthenticatedAdminReportsRoute
@@ -688,6 +709,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminActivityRoute: AuthenticatedAdminActivityRoute,
     AuthenticatedAdminExamsRoute: AuthenticatedAdminExamsRoute,
     AuthenticatedAdminFeedbackRoute: AuthenticatedAdminFeedbackRoute,
     AuthenticatedAdminReportsRoute: AuthenticatedAdminReportsRoute,

@@ -29,8 +29,10 @@ export const listStudentExams = createServerFn({ method: "POST" }).middleware([r
 });
 export const studentExamsQuery = queryOptions({ queryKey: ["student-exams"], staleTime: 15_000, queryFn: () => listStudentExams() });
 
-export const startAttempt = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(id).handler(async ({ data, context }) => {
-  const { data: attemptId, error } = await context.supabase.rpc("start_attempt", { _exam_id: data.id }); if (error) throw new Error(error.message);
+export const startAttempt = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ id: z.string().uuid(), name: z.string().trim().min(2, "Please enter your full name").max(120), roll: z.string().trim().max(60).default("") }))
+  .handler(async ({ data, context }) => {
+  const { data: attemptId, error } = await context.supabase.rpc("start_exam_attempt", { _exam_id: data.id, _name: data.name, _roll: data.roll }); if (error) throw new Error(error.message);
   return attemptId as string;
 });
 export const getAttempt = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(id).handler(async ({ data, context }) => {
@@ -66,4 +68,13 @@ export const gradeShortAnswer = createServerFn({ method: "POST" }).middleware([r
 export const reportTabSwitch = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(id).handler(async ({ data, context }) => {
   const { data: r, error } = await context.supabase.rpc("report_tab_switch", { _attempt_id: data.id }); if (error) throw new Error(error.message);
   return JSON.parse(JSON.stringify(r)) as { count: number; cancelled: boolean };
+});
+
+export type AdminActivity = {
+  attempts: { id: string; started_at: string; submitted_at: string | null; status: string; score: number; total_marks: number; tab_switches: number; candidate_name: string; roll_number: string; account_name: string | null; email: string | null; exam_title: string; subject: string; teacher: string | null }[];
+  events: { at: string; kind: string; text: string }[];
+};
+export const getAdminActivity = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
+  const { data, error } = await context.supabase.rpc("admin_activity"); if (error) throw new Error(error.message);
+  return JSON.parse(JSON.stringify(data)) as AdminActivity;
 });

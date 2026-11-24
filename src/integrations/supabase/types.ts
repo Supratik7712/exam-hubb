@@ -118,9 +118,11 @@ export type Database = {
       }
       exam_attempts: {
         Row: {
+          candidate_name: string
           deadline: string
           exam_id: string
           id: string
+          roll_number: string
           score: number
           started_at: string
           status: string
@@ -130,9 +132,11 @@ export type Database = {
           total_marks: number
         }
         Insert: {
+          candidate_name?: string
           deadline: string
           exam_id: string
           id?: string
+          roll_number?: string
           score?: number
           started_at?: string
           status?: string
@@ -142,9 +146,11 @@ export type Database = {
           total_marks?: number
         }
         Update: {
+          candidate_name?: string
           deadline?: string
           exam_id?: string
           id?: string
+          roll_number?: string
           score?: number
           started_at?: string
           status?: string
@@ -433,6 +439,7 @@ export type Database = {
     Functions: {
       _finalize_attempt: { Args: { _attempt_id: string }; Returns: undefined }
       _finalize_expired: { Args: { _student: string }; Returns: undefined }
+      admin_activity: { Args: never; Returns: Json }
       admin_approve_teacher: { Args: { _user_id: string }; Returns: undefined }
       admin_grant_admin: { Args: { _user_id: string }; Returns: undefined }
       admin_report: { Args: never; Returns: Json }
@@ -492,6 +499,10 @@ export type Database = {
       staff_attempt_detail: { Args: { _attempt_id: string }; Returns: Json }
       staff_exam_attempts: { Args: { _exam_id: string }; Returns: Json }
       start_attempt: { Args: { _exam_id: string }; Returns: string }
+      start_exam_attempt: {
+        Args: { _exam_id: string; _name: string; _roll: string }
+        Returns: string
+      }
       student_certificates: { Args: never; Returns: Json }
       student_exams: { Args: never; Returns: Json }
       submit_attempt: { Args: { _attempt_id: string }; Returns: undefined }
