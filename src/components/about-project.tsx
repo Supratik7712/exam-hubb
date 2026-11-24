@@ -12,8 +12,12 @@ import {
 import { cn } from "@/lib/utils";
 
 export const projectInfo = {
+  college: "MSIT Kolkata",
   course: "B.Tech CSBS — Software Engineering",
   semester: "5th Semester Curriculum Project",
+  session: "Session 2024–2028",
+  graduating: "Graduating 2028",
+  guideRole: "Teacher — Software Engineering",
   summary:
     "ExamHub is an online examination platform where teachers set the question paper, students sit for timed exams in the browser, and every paper is evaluated on the server. Questions come in three patterns — multiple choice, true / false and short answer with a word limit the teacher fixes. Correct answers stay on the server until the result is released, so a paper cannot be read off a student's screen. Results, performance insights, AI study recommendations and verifiable certificates follow automatically, and each role sees only its own dashboard.",
   members: [
@@ -38,9 +42,17 @@ function initials(name: string) {
 export function AboutBody({ stacked = false }: { stacked?: boolean }) {
   return (
     <div>
-      <span className="inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
-        <GraduationCap className="size-3.5" /> {projectInfo.course} · {projectInfo.semester}
-      </span>
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
+          <GraduationCap className="size-3.5" /> {projectInfo.college}
+        </span>
+        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+          {projectInfo.course} · {projectInfo.semester}
+        </span>
+        <span className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1 text-xs font-semibold text-muted-foreground">
+          {projectInfo.session} · {projectInfo.graduating}
+        </span>
+      </div>
 
       <p className="mt-5 max-w-3xl text-[15px] leading-relaxed text-muted-foreground">
         {projectInfo.summary}
@@ -77,15 +89,13 @@ export function AboutBody({ stacked = false }: { stacked?: boolean }) {
             {projectInfo.guides.map((g) => (
               <li key={g} className="rounded-xl border border-border/70 bg-accent/60 px-4 py-3">
                 <span className="block font-semibold">{g}</span>
-                <span className="block text-xs text-muted-foreground">
-                  Guide — Software Engineering
-                </span>
+                <span className="block text-xs text-muted-foreground">{projectInfo.guideRole}</span>
               </li>
             ))}
           </ul>
           <p className="mt-4 text-xs text-muted-foreground">
             Submitted as a group curriculum project for the 5th semester, B.Tech Computer Science &amp;
-            Business System.
+            Business System, {projectInfo.college} — {projectInfo.session}.
           </p>
         </div>
       </div>
@@ -119,7 +129,8 @@ export function AboutDialogButton() {
         <DialogHeader>
           <DialogTitle>About ExamHub</DialogTitle>
           <DialogDescription>
-            {projectInfo.course} · {projectInfo.semester}
+            {projectInfo.college} · {projectInfo.course} · {projectInfo.semester} ·{" "}
+            {projectInfo.session}
           </DialogDescription>
         </DialogHeader>
         <AboutBody stacked />
