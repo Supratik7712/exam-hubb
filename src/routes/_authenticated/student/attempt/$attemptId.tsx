@@ -18,7 +18,7 @@ import { MAX_WARNINGS, feedbackKey, isViolationTarget } from "@/lib/proctoring";
 import { cn } from "@/lib/utils";
 import { leaveExam } from "@/lib/leave-exam";
 
-export const Route = createFileRoute("/_authenticated/student/attempt/$attemptId")({
+export const Route = createFileRoute("/_authenticated/student/attempt/$attemptId")({ staticData: { sitemap: false },
   head: () => pageHead("Exam", "Take your ExamHubb exam."),
   loader: ({ context, params }) => context.queryClient.ensureQueryData(attemptQuery(params.attemptId)),
   errorComponent: ({ error }) => <div role="alert" className="space-y-3"><p className="text-destructive">{error instanceof Error ? error.message : String(error)}</p><Link to="/student/exams" className="text-primary underline">Back to exams</Link></div>,

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/logo";
 
-export const Route = createFileRoute("/reset-password")({
+export const Route = createFileRoute("/reset-password")({ staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Set a new password – ExamHubb" },
@@ -15,6 +15,7 @@ export const Route = createFileRoute("/reset-password")({
       { property: "og:title", content: "Set a new password – ExamHubb" },
       { property: "og:description", content: "Reset your ExamHubb password." },
       { property: "og:type", content: "website" },
+      { name: "robots", content: "noindex" },
       { name: "twitter:card", content: "summary" },
     ],
   }),

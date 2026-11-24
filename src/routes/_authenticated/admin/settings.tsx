@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { settingsQuery, saveSettings } from "@/lib/extras.functions";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/admin/settings")({
+export const Route = createFileRoute("/_authenticated/admin/settings")({ staticData: { sitemap: false },
   head: () => pageHead("Platform settings", "Configure ExamHubb pass mark and teacher requests."),
   loader: ({ context }) => context.queryClient.ensureQueryData(settingsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,

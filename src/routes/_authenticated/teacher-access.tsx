@@ -9,7 +9,7 @@ import { Logo } from "@/components/logo";
 import { awaitingTeacherApproval, homePathFor, meQuery, primaryRole } from "@/lib/auth";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/teacher-access")({
+export const Route = createFileRoute("/_authenticated/teacher-access")({ staticData: { sitemap: false },
   head: () => pageHead("Teacher access", "Request teacher access to create and manage exams on ExamHubb."),
   component: TeacherAccess,
 });

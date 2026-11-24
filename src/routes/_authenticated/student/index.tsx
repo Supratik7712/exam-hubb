@@ -9,7 +9,7 @@ import { studentExamsQuery } from "@/lib/attempts.functions";
 import { percentOf } from "@/lib/attempt-rules";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/student/")({ head: () => pageHead("Student dashboard", "Your upcoming exams, results and notifications on ExamHubb."), loader: ({ context }) => context.queryClient.ensureQueryData(studentExamsQuery), component: StudentHome });
+export const Route = createFileRoute("/_authenticated/student/")({ staticData: { sitemap: false }, head: () => pageHead("Student dashboard", "Your upcoming exams, results and notifications on ExamHubb."), loader: ({ context }) => context.queryClient.ensureQueryData(studentExamsQuery), component: StudentHome });
 
 function StudentHome() {
   const { data: me } = useSuspenseQuery(meQuery);

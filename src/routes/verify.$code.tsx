@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Award, XCircle } from "lucide-react";
 import { verifyCertificate } from "@/lib/extras.functions";
 
-export const Route = createFileRoute("/verify/$code")({
+export const Route = createFileRoute("/verify/$code")({ staticData: { sitemap: false },
   loader: ({ params }) => verifyCertificate({ data: { code: params.code } }),
   head: () => ({ meta: [{ title: "Verify certificate – ExamHubb" }, { name: "description", content: "Check that an ExamHubb certificate is genuine." }, { property: "og:title", content: "Verify certificate – ExamHubb" }, { property: "og:description", content: "Check that an ExamHubb certificate is genuine." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }),
   errorComponent: () => <p className="p-10 text-center">Couldn't check this certificate right now.</p>,

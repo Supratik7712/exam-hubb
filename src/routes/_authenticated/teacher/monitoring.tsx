@@ -8,7 +8,7 @@ import { getLiveAttempts } from "@/lib/extras.functions";
 import { formatClock } from "@/lib/attempt-rules";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/teacher/monitoring")({
+export const Route = createFileRoute("/_authenticated/teacher/monitoring")({ staticData: { sitemap: false },
   head: () => pageHead("Live monitoring", "See which students are taking your ExamHubb exams right now."),
   component: Monitoring,
 });

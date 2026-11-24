@@ -7,7 +7,7 @@ import { studentExamsQuery } from "@/lib/attempts.functions";
 import { percentOf } from "@/lib/attempt-rules";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/student/performance")({
+export const Route = createFileRoute("/_authenticated/student/performance")({ staticData: { sitemap: false },
   head: () => pageHead("My performance", "Track your ExamHubb scores over time and by subject."),
   loader: ({ context }) => context.queryClient.ensureQueryData(studentExamsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,

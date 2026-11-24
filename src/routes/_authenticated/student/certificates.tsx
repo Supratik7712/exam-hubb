@@ -11,7 +11,7 @@ import { percentOf } from "@/lib/attempt-rules";
 import { pageHead } from "@/lib/page-head";
 
 const certsQuery = queryOptions({ queryKey: ["certificates"], staleTime: 30_000, queryFn: () => getCertificates() });
-export const Route = createFileRoute("/_authenticated/student/certificates")({
+export const Route = createFileRoute("/_authenticated/student/certificates")({ staticData: { sitemap: false },
   head: () => pageHead("My certificates", "Certificates for ExamHubb exams you passed."),
   validateSearch: z.object({ open: z.string().optional() }),
   loader: ({ context }) => context.queryClient.ensureQueryData(certsQuery),

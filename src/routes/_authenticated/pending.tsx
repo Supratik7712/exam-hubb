@@ -7,7 +7,7 @@ import { Logo } from "@/components/logo";
 import { meQuery, homePathFor } from "@/lib/auth";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/pending")({
+export const Route = createFileRoute("/_authenticated/pending")({ staticData: { sitemap: false },
   head: () => pageHead("Account status", "Check your ExamHubb account approval and access status."),
   component: Pending,
 });

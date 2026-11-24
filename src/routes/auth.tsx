@@ -16,7 +16,7 @@ import { takeSignInRole } from "@/lib/signin-intent";
 
 const searchSchema = z.object({ mode: z.enum(["signin", "signup", "forgot"]).optional() });
 
-export const Route = createFileRoute("/auth")({
+export const Route = createFileRoute("/auth")({ staticData: { sitemap: true },
   validateSearch: searchSchema,
   head: () => ({
     meta: [

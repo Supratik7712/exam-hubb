@@ -12,7 +12,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { feedbackQuery, updateFeedback, type Feedback } from "@/lib/extras.functions";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/admin/feedback")({
+export const Route = createFileRoute("/_authenticated/admin/feedback")({ staticData: { sitemap: false },
   head: () => pageHead("Feedback review", "Review and respond to user feedback on ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(feedbackQuery(true)),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,

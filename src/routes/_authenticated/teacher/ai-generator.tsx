@@ -15,7 +15,7 @@ import { saveQuestion } from "@/lib/exams.functions";
 import { pageHead } from "@/lib/page-head";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/teacher/ai-generator")({
+export const Route = createFileRoute("/_authenticated/teacher/ai-generator")({ staticData: { sitemap: false },
   head: () => pageHead("AI question generator", "Draft exam questions with AI, approve them, and publish them as an exam."),
   component: AiGen,
 });

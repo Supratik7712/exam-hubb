@@ -7,7 +7,7 @@ import { getReport } from "@/lib/extras.functions";
 import { pageHead } from "@/lib/page-head";
 
 const reportQuery = queryOptions({ queryKey: ["admin-report"], staleTime: 30_000, queryFn: () => getReport() });
-export const Route = createFileRoute("/_authenticated/admin/reports")({
+export const Route = createFileRoute("/_authenticated/admin/reports")({ staticData: { sitemap: false },
   head: () => pageHead("Platform reports", "Exam, attempt and pass-rate reports across ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(reportQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,

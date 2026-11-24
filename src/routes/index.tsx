@@ -11,7 +11,7 @@ import { AboutSection } from "@/components/about-project";
 import { useMe, homePathFor } from "@/lib/auth";
 import hero from "@/assets/hero-exam.jpg";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/")({ staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "ExamHubb – Intelligent Online Examination System" },

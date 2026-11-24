@@ -10,7 +10,7 @@ import { getAdminActivity } from "@/lib/attempts.functions";
 import { pageHead } from "@/lib/page-head";
 
 const activityQuery = queryOptions({ queryKey: ["admin-activity"], staleTime: 10_000, refetchInterval: 30_000, queryFn: () => getAdminActivity() });
-export const Route = createFileRoute("/_authenticated/admin/activity")({
+export const Route = createFileRoute("/_authenticated/admin/activity")({ staticData: { sitemap: false },
   head: () => pageHead("Activity log", "Track every exam attempt and event across ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(activityQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,

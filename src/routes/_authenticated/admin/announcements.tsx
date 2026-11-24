@@ -15,7 +15,7 @@ import { EmptyState } from "@/components/app-shell";
 import { allAnnouncementsQuery, saveAnnouncement, deleteAnnouncement, type Announcement } from "@/lib/extras.functions";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/admin/announcements")({
+export const Route = createFileRoute("/_authenticated/admin/announcements")({ staticData: { sitemap: false },
   head: () => pageHead("Announcements", "Create, edit, schedule and delete the announcements shown under the bell icon."),
   loader: ({ context }) => context.queryClient.ensureQueryData(allAnnouncementsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,

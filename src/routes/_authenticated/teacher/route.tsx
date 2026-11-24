@@ -6,7 +6,7 @@ import { requireRole } from "@/lib/role-guard";
 
 const TITLES: Record<string, string> = { "/teacher": "Teacher dashboard", "/teacher/exams": "Exam management", "/teacher/materials": "Study materials", "/teacher/results": "Results", "/teacher/ai-generator": "AI generator", "/teacher/monitoring": "Live monitoring" };
 
-export const Route = createFileRoute("/_authenticated/teacher")({
+export const Route = createFileRoute("/_authenticated/teacher")({ staticData: { sitemap: false },
   beforeLoad: ({ context }) => requireRole(context.queryClient, "teacher"),
   head: () => ({ meta: [{ title: "Teacher dashboard – ExamHubb" }] }),
   component: Layout,

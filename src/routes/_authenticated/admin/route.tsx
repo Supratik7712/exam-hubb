@@ -6,7 +6,7 @@ import { requireRole } from "@/lib/role-guard";
 
 const TITLES: Record<string, string> = { "/admin": "Admin overview", "/admin/users": "User management", "/admin/exams": "Exam oversight", "/admin/activity": "Activity log", "/admin/feedback": "Feedback", "/admin/reports": "Reports", "/admin/settings": "Settings" };
 
-export const Route = createFileRoute("/_authenticated/admin")({
+export const Route = createFileRoute("/_authenticated/admin")({ staticData: { sitemap: false },
   beforeLoad: ({ context }) => requireRole(context.queryClient, "admin"),
   head: () => ({ meta: [{ title: "Admin overview – ExamHubb" }] }),
   component: Layout,

@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { studentExamsQuery, startAttempt, type StudentExam } from "@/lib/attempts.functions";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/student/exams")({
+export const Route = createFileRoute("/_authenticated/student/exams")({ staticData: { sitemap: false },
   head: () => pageHead("Available exams", "Exams you can take now or soon on ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(studentExamsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
