@@ -61,7 +61,7 @@ function AuthPage() {
     await navigate({ to: homePathFor(me, preferredRole), replace: true });
   };
 
-  // Already signed in (or returning from Google/Lovable): go to dashboard.
+  // Already signed in (or returning from Google): go to dashboard.
   useEffect(() => {
     // Quick local session check for the redirect only; protected pages still re-validate the user.
     supabase.auth.getSession().then(async ({ data }) => { if (data.session?.user) await goHome(takeSignInRole()); }).catch((error: Error) => toast.error(error.message));
@@ -215,7 +215,7 @@ function AuthPage() {
               <Button className="w-full" disabled={busy}>{busy && <Loader2 className="animate-spin" />}Create account</Button>
               <Divider />
               <ProviderButtons onSuccess={() => goHome()} />
-              <p className="text-center text-xs text-muted-foreground">Signing up with Google or Lovable creates a student account.</p>
+              <p className="text-center text-xs text-muted-foreground">Signing up with Google creates a student account.</p>
             </form>
           ) : (
             <form onSubmit={onSignIn} className="space-y-4">
