@@ -28,7 +28,7 @@ function AiGen() {
   const [type, setType] = useState<keyof typeof TYPES>("Mixed"); const [difficulty, setDifficulty] = useState<"Easy" | "Medium" | "Hard">("Medium");
   const [items, setItems] = useState<(GeneratedQuestion & { state: "new" | "saved" | "dropped"; savedId?: string | undefined })[]>([]);
   const navigate = useNavigate(); const approvedIds = items.flatMap(x => x.state === "saved" && x.savedId ? [x.savedId] : []);
-  function makeExam() { sessionStorage.setItem(AI_HANDOFF_KEY, JSON.stringify({ topic: topic.trim(), ids: approvedIds })); void navigate({ to: "/teacher/exams" }); }
+  async function makeExam() { await qc.refetchQueries({ queryKey: ["workspace"] }); sessionStorage.setItem(AI_HANDOFF_KEY, JSON.stringify({ topic: topic.trim(), ids: approvedIds })); void navigate({ to: "/teacher/exams" }); }
   const m = useMutation({ mutationFn: () => gen({ data: { topic, count, type: TYPES[type], difficulty } }),
     onSuccess: qs => { setItems(qs.map(q => ({ ...q, state: "new" as const }))); if (!qs.length) toast.error("No usable questions came back — try again"); },
     onError: e => toast.error(e instanceof Error ? e.message : "Couldn't generate") });
@@ -47,7 +47,7 @@ function AiGen() {
       <div className="space-y-2"><Label htmlFor="count">How many</Label><Input id="count" type="number" min={1} max={10} value={count} onChange={e => setCount(Math.min(10, Math.max(1, Number(e.target.value) || 1)))} /></div>
       <Button type="submit" disabled={m.isPending || topic.trim().length < 2}><Sparkles />{m.isPending ? "Generating…" : "Generate"}</Button>
     </form>
-    {approvedIds.length > 0 && <div className="sticky top-2 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary bg-card p-4 shadow-sm"><p className="text-sm"><span className="font-semibold">{approvedIds.length} approved question{approvedIds.length > 1 ? "s" : ""}</span> — put them in a paper, set the timer and publish.</p><Button onClick={makeExam}><FileText />Create exam & publish</Button></div>}
+    {approvedIds.length > 0 && <div className="sticky top-2 z-10 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-primary bg-card p-4 shadow-sm"><p className="text-sm"><span className="font-semibold">{approvedIds.length} approved question{approvedIds.length > 1 ? "s" : ""}</span> — put them in a paper, set the timer and publish.</p><Button onClick={() => void makeExam()}><FileText />Create exam & publish</Button></div>}
     <div className="space-y-3">{items.map((q, i) => <article key={i} className={cn("rounded-lg border bg-card p-5", q.state === "dropped" && "opacity-50")}>
       <div className="flex flex-wrap items-center justify-between gap-2"><div className="flex gap-2"><Badge variant="secondary">{LABEL[q.question_type]}</Badge>{q.word_limit && <Badge variant="outline">{q.word_limit} words</Badge>}</div>
         {q.state === "new" ? <div className="flex gap-2"><Button size="sm" variant="ghost" onClick={() => setItems(s => s.map((x, j) => j === i ? { ...x, state: "dropped" } : x))}><X />Discard</Button><Button size="sm" onClick={() => void approve(i)}><Check />Approve</Button></div>
