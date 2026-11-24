@@ -31,7 +31,7 @@ export const projectInfo = {
     { name: "Supratik Saha", role: "Team Lead", linkedin: "https://www.linkedin.com/in/supratiksahass/" },
     { name: "Swastika Banik", role: "Project Member", linkedin: "https://www.linkedin.com/in/swastika-banik-29904728b/" },
     { name: "Suparna Das", role: "Project Member", linkedin: "https://www.linkedin.com/in/suparna-das-6b4bbb371/" },
-    { name: "Rashi Kumari", role: "Project Member", linkedin: "" },
+    { name: "Rashi Kumari", role: "Project Member", linkedin: "https://www.linkedin.com/in/rashi-kumari-714046336/" },
     { name: "Swayam Roy", role: "Project Member", linkedin: "" },
   ] satisfies Person[],
   guides: [
