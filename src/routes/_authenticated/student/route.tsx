@@ -8,7 +8,7 @@ const TITLES: Record<string, string> = { "/student": "Student dashboard", "/stud
 
 export const Route = createFileRoute("/_authenticated/student")({
   beforeLoad: ({ context }) => requireRole(context.queryClient, "student"),
-  head: () => ({ meta: [{ title: "Student dashboard – ExamHub" }] }),
+  head: () => ({ meta: [{ title: "Student dashboard – ExamHubb" }] }),
   component: Layout,
 });
 

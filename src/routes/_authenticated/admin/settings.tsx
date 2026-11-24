@@ -11,7 +11,7 @@ import { settingsQuery, saveSettings } from "@/lib/extras.functions";
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
-  head: () => pageHead("Platform settings", "Configure ExamHub pass mark and teacher requests."),
+  head: () => pageHead("Platform settings", "Configure ExamHubb pass mark and teacher requests."),
   loader: ({ context }) => context.queryClient.ensureQueryData(settingsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: SettingsPage,

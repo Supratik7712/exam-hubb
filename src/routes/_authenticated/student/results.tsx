@@ -10,7 +10,7 @@ import { useQuery } from "@tanstack/react-query";
 import { settingsQuery } from "@/lib/extras.functions";
 
 export const Route = createFileRoute("/_authenticated/student/results")({
-  head: () => pageHead("My results", "Scores and reviews of your submitted ExamHub exams."),
+  head: () => pageHead("My results", "Scores and reviews of your submitted ExamHubb exams."),
   loader: ({ context }) => context.queryClient.ensureQueryData(studentExamsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: Results,

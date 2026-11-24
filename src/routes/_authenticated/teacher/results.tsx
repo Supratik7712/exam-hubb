@@ -17,7 +17,7 @@ import { pageHead } from "@/lib/page-head";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/teacher/results")({
-  head: () => pageHead("Exam results", "Review student attempts, mark short answers and re-check automatic marks on ExamHub."),
+  head: () => pageHead("Exam results", "Review student attempts, mark short answers and re-check automatic marks on ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceQuery("teacher")),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: TeacherResults,

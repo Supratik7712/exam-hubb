@@ -12,7 +12,7 @@ import { pageHead } from "@/lib/page-head";
 
 const certsQuery = queryOptions({ queryKey: ["certificates"], staleTime: 30_000, queryFn: () => getCertificates() });
 export const Route = createFileRoute("/_authenticated/student/certificates")({
-  head: () => pageHead("My certificates", "Certificates for ExamHub exams you passed."),
+  head: () => pageHead("My certificates", "Certificates for ExamHubb exams you passed."),
   validateSearch: z.object({ open: z.string().optional() }),
   loader: ({ context }) => context.queryClient.ensureQueryData(certsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
@@ -35,7 +35,7 @@ function Certs() {
     <Dialog open={!!open} onOpenChange={o => { if (!o) setOpen(null); }}>
       <DialogContent className="max-w-2xl"><DialogTitle className="sr-only">Certificate</DialogTitle><DialogDescription className="sr-only">Certificate of achievement</DialogDescription>
         {open && <div id="certificate" className="rounded-xl border-4 border-double border-primary p-8 text-center">
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">ExamHub · Certificate of achievement</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-muted-foreground">ExamHubb · Certificate of achievement</p>
           <p className="mt-6 text-sm text-muted-foreground">This certifies that</p>
           <p className="mt-2 font-display text-3xl font-extrabold">{open.student_name}</p>
           <p className="mt-4 text-sm text-muted-foreground">passed</p>

@@ -20,10 +20,10 @@ export const Route = createFileRoute("/auth")({
   validateSearch: searchSchema,
   head: () => ({
     meta: [
-      { title: "Sign in – ExamHub" },
-      { name: "description", content: "Sign in or create your ExamHub student or teacher account." },
-      { property: "og:title", content: "Sign in – ExamHub" },
-      { property: "og:description", content: "Access your ExamHub dashboard." },
+      { title: "Sign in – ExamHubb" },
+      { name: "description", content: "Sign in or create your ExamHubb student or teacher account." },
+      { property: "og:title", content: "Sign in – ExamHubb" },
+      { property: "og:description", content: "Access your ExamHubb dashboard." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

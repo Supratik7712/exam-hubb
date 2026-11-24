@@ -1,4 +1,4 @@
-# ExamHub roadmap
+# ExamHubb roadmap
 
 - [x] Correct returning-session and Google/Lovable sign-in redirects so teacher selection is not reset to Student (signed-in teacher return and refresh verified; external provider popup not exercised)
 

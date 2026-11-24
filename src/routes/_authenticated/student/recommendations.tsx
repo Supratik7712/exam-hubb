@@ -9,7 +9,7 @@ import { getRecommendations } from "@/lib/extras.functions";
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/student/recommendations")({
-  head: () => pageHead("Study recommendations", "Personal AI study suggestions based on your ExamHub results."),
+  head: () => pageHead("Study recommendations", "Personal AI study suggestions based on your ExamHubb results."),
   component: Recs,
 });
 

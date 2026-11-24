@@ -11,7 +11,7 @@ import { pageHead } from "@/lib/page-head";
 
 const activityQuery = queryOptions({ queryKey: ["admin-activity"], staleTime: 10_000, refetchInterval: 30_000, queryFn: () => getAdminActivity() });
 export const Route = createFileRoute("/_authenticated/admin/activity")({
-  head: () => pageHead("Activity log", "Track every exam attempt and event across ExamHub."),
+  head: () => pageHead("Activity log", "Track every exam attempt and event across ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(activityQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: Activity,
@@ -28,7 +28,7 @@ function Activity() {
     const rows = [["Name entered", "Roll", "Account", "Email", "Exam", "Subject", "Teacher", "Started", "Submitted", "Status", "Score", "Total", "Tab switches"],
       ...attempts.map(a => [a.candidate_name, a.roll_number, a.account_name ?? "", a.email ?? "", a.exam_title, a.subject, a.teacher ?? "", fmt(a.started_at), fmt(a.submitted_at), a.status, a.score, a.total_marks, a.tab_switches])];
     const blob = new Blob([rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n")], { type: "text/csv" });
-    const el = document.createElement("a"); el.href = URL.createObjectURL(blob); el.download = "examhub-attempts.csv"; el.click(); URL.revokeObjectURL(el.href);
+    const el = document.createElement("a"); el.href = URL.createObjectURL(blob); el.download = "examhubb-attempts.csv"; el.click(); URL.revokeObjectURL(el.href);
   }
   return <div className="space-y-6">
     <div className="flex flex-wrap items-center justify-between gap-4"><div><h2 className="text-3xl font-bold">Activity log</h2><p className="mt-1 text-muted-foreground">{data.attempts.length} exam attempts · {data.events.length} recent events · refreshes every 30 seconds</p></div>

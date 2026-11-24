@@ -8,7 +8,7 @@ import { meQuery, homePathFor } from "@/lib/auth";
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/pending")({
-  head: () => pageHead("Account status", "Check your ExamHub account approval and access status."),
+  head: () => pageHead("Account status", "Check your ExamHubb account approval and access status."),
   component: Pending,
 });
 

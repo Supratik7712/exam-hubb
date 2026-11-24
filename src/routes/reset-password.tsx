@@ -10,10 +10,10 @@ import { Logo } from "@/components/logo";
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
-      { title: "Set a new password – ExamHub" },
-      { name: "description", content: "Choose a new password for your ExamHub account." },
-      { property: "og:title", content: "Set a new password – ExamHub" },
-      { property: "og:description", content: "Reset your ExamHub password." },
+      { title: "Set a new password – ExamHubb" },
+      { name: "description", content: "Choose a new password for your ExamHubb account." },
+      { property: "og:title", content: "Set a new password – ExamHubb" },
+      { property: "og:description", content: "Reset your ExamHubb password." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],

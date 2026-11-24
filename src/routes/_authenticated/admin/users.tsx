@@ -14,7 +14,7 @@ import { awaitingTeacherApproval, useMe } from "@/lib/auth";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/admin/users")({ head: () => pageHead("User management", "Approve teachers, manage accounts and grant administrator access on ExamHub."), component: UsersPage });
+export const Route = createFileRoute("/_authenticated/admin/users")({ head: () => pageHead("User management", "Approve teachers, manage accounts and grant administrator access on ExamHubb."), component: UsersPage });
 
 type Filter = "all" | "student" | "teacher" | "pending";
 

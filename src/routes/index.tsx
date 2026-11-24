@@ -14,9 +14,9 @@ import hero from "@/assets/hero-exam.jpg";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ExamHub – Intelligent Online Examination System" },
+      { title: "ExamHubb – Intelligent Online Examination System" },
       { name: "description", content: "Timed online exams, instant MCQ evaluation, analytics, AI question generation and certificates — for students, teachers and admins." },
-      { property: "og:title", content: "ExamHub – Intelligent Online Examination System" },
+      { property: "og:title", content: "ExamHubb – Intelligent Online Examination System" },
       { property: "og:description", content: "Timed online exams, instant evaluation, analytics and AI study recommendations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -40,7 +40,7 @@ const roles = [
   { icon: Users, name: "Admins", points: ["Approve teacher accounts", "Activate or deactivate users", "Platform-wide reports", "Review feedback"] },
 ];
 
-const FAQ_FIRST_QUESTION = "Who can use ExamHub?";
+const FAQ_FIRST_QUESTION = "Who can use ExamHubb?";
 
 const faqs = [
   {
@@ -163,7 +163,7 @@ function Landing() {
               Exams that are <span className="text-highlight">fair</span>, fast and actually insightful.
             </h1>
             <p className="mt-5 max-w-lg text-lg text-muted-foreground">
-              ExamHub takes you from exam creation to evaluated results and personalised study plans — in one
+              ExamHubb takes you from exam creation to evaluated results and personalised study plans — in one
               secure, role-based platform.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -173,7 +173,7 @@ function Landing() {
               <Button variant="outline" size="lg" asChild><Link to="/auth">I already have one</Link></Button>
             </div>
           </div>
-          <img src={hero} alt="Student taking an online exam on ExamHub" width={1280} height={1024}
+          <img src={hero} alt="Student taking an online exam on ExamHubb" width={1280} height={1024}
             className="w-full rounded-2xl shadow-lift" />
         </div>
       </section>
@@ -244,7 +244,7 @@ function Landing() {
           </div>
 
           <p className="mt-6 text-sm text-muted-foreground">
-            Can't find your answer? Sign in — account and teacher-access requests are handled inside ExamHub by your platform admins.
+            Can't find your answer? Sign in — account and teacher-access requests are handled inside ExamHubb by your platform admins.
           </p>
         </div>
       </section>
@@ -254,7 +254,7 @@ function Landing() {
       <footer className="border-t">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-muted-foreground md:flex-row">
           <Logo />
-          <p>© 2026 ExamHub. All rights reserved.</p>
+          <p>© 2026 ExamHubb. All rights reserved.</p>
         </div>
       </footer>
     </div>

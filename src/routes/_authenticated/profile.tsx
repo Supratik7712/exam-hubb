@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/profile")({
     const me = await context.queryClient.ensureQueryData(meQuery);
     if (!primaryRole(me) || me?.profile?.account_status !== "active") throw redirect({ to: "/pending" });
   },
-  head: () => pageHead("Profile", "Manage your ExamHub name, username and contact details."),
+  head: () => pageHead("Profile", "Manage your ExamHubb name, username and contact details."),
   component: ProfilePage,
 });
 

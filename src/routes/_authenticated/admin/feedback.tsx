@@ -13,7 +13,7 @@ import { feedbackQuery, updateFeedback, type Feedback } from "@/lib/extras.funct
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/admin/feedback")({
-  head: () => pageHead("Feedback review", "Review and respond to user feedback on ExamHub."),
+  head: () => pageHead("Feedback review", "Review and respond to user feedback on ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(feedbackQuery(true)),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: AdminFeedback,

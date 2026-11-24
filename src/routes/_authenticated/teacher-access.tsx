@@ -10,7 +10,7 @@ import { awaitingTeacherApproval, homePathFor, meQuery, primaryRole } from "@/li
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/teacher-access")({
-  head: () => pageHead("Teacher access", "Request teacher access to create and manage exams on ExamHub."),
+  head: () => pageHead("Teacher access", "Request teacher access to create and manage exams on ExamHubb."),
   component: TeacherAccess,
 });
 

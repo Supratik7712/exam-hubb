@@ -13,7 +13,7 @@ import { pageHead } from "@/lib/page-head";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/student/feedback")({
-  head: () => pageHead("Feedback", "Share feedback about exams and ExamHub."),
+  head: () => pageHead("Feedback", "Share feedback about exams and ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(feedbackQuery(false)),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: FeedbackPage,

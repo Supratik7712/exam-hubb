@@ -8,7 +8,7 @@ import { workspaceQuery } from "@/lib/exams.functions";
 import { examStatus } from "@/lib/exam-rules";
 import { pageHead } from "@/lib/page-head";
 
-export const Route = createFileRoute("/_authenticated/teacher/")({ head: () => pageHead("Teacher dashboard", "Your exams, question bank and upcoming assessments on ExamHub."), loader: ({ context }) => context.queryClient.ensureQueryData(workspaceQuery("teacher")), component: TeacherHome });
+export const Route = createFileRoute("/_authenticated/teacher/")({ head: () => pageHead("Teacher dashboard", "Your exams, question bank and upcoming assessments on ExamHubb."), loader: ({ context }) => context.queryClient.ensureQueryData(workspaceQuery("teacher")), component: TeacherHome });
 
 function TeacherHome() {
   const { data } = useSuspenseQuery(workspaceQuery("teacher"));

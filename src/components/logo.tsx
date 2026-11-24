@@ -14,7 +14,7 @@ export function Logo({ className, inverted }: { className?: string; inverted?: b
         <img src={mark} alt="" aria-hidden="true" width={22} height={22} className="size-[22px]" />
       </span>
       <span>
-        Exam<span className="text-highlight">Hub</span>
+        Exam<span className="text-highlight">Hubb</span>
       </span>
     </Link>
   );

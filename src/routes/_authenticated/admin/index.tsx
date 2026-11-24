@@ -9,7 +9,7 @@ import { pageHead } from "@/lib/page-head";
 import { workspaceQuery } from "@/lib/exams.functions";
 import { examStatus } from "@/lib/exam-rules";
 
-export const Route = createFileRoute("/_authenticated/admin/")({ head: () => pageHead("Admin dashboard", "ExamHub platform overview, teacher approvals, exams and administrative activity."), component: AdminHome });
+export const Route = createFileRoute("/_authenticated/admin/")({ head: () => pageHead("Admin dashboard", "ExamHubb platform overview, teacher approvals, exams and administrative activity."), component: AdminHome });
 
 async function count(filter: (q: any) => any) {
   const { count } = await filter(supabase.from("profiles").select("id", { count: "exact", head: true }));

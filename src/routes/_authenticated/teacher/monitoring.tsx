@@ -9,7 +9,7 @@ import { formatClock } from "@/lib/attempt-rules";
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/teacher/monitoring")({
-  head: () => pageHead("Live monitoring", "See which students are taking your ExamHub exams right now."),
+  head: () => pageHead("Live monitoring", "See which students are taking your ExamHubb exams right now."),
   component: Monitoring,
 });
 

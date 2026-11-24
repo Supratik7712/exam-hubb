@@ -8,7 +8,7 @@ import { pageHead } from "@/lib/page-head";
 
 const reportQuery = queryOptions({ queryKey: ["admin-report"], staleTime: 30_000, queryFn: () => getReport() });
 export const Route = createFileRoute("/_authenticated/admin/reports")({
-  head: () => pageHead("Platform reports", "Exam, attempt and pass-rate reports across ExamHub."),
+  head: () => pageHead("Platform reports", "Exam, attempt and pass-rate reports across ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(reportQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: Reports,
@@ -19,7 +19,7 @@ function Reports() {
   function csv() {
     const rows = [["Exam", "Subject", "Teacher", "Attempts", "Average %", "Passed"], ...r.per_exam.map(e => [e.title, e.subject, e.teacher ?? "", e.attempts, e.avg_percent ?? "", e.passed])];
     const blob = new Blob([rows.map(x => x.map(v => `"${String(v).replace(/"/g, '""')}"`).join(",")).join("\n")], { type: "text/csv" });
-    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "examhub-report.csv"; a.click(); URL.revokeObjectURL(a.href);
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "examhubb-report.csv"; a.click(); URL.revokeObjectURL(a.href);
   }
   return <div className="space-y-8">
     <div className="flex flex-wrap items-center justify-between gap-4"><div><h2 className="text-3xl font-bold">Reports</h2><p className="mt-1 text-muted-foreground">{r.open_feedback} open feedback items</p></div><Button variant="outline" onClick={csv}><Download />Download CSV</Button></div>

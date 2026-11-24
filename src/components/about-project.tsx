@@ -19,7 +19,7 @@ export const projectInfo = {
   graduating: "Graduating 2028",
   guideRole: "Teacher — Software Engineering",
   summary:
-    "ExamHub is an online examination platform where teachers set the question paper, students sit for timed exams in the browser, and every paper is evaluated on the server. Questions come in three patterns — multiple choice, true / false and short answer with a word limit the teacher fixes. Correct answers stay on the server until the result is released, so a paper cannot be read off a student's screen. Results, performance insights, AI study recommendations and verifiable certificates follow automatically, and each role sees only its own dashboard.",
+    "ExamHubb is an online examination platform where teachers set the question paper, students sit for timed exams in the browser, and every paper is evaluated on the server. Questions come in three patterns — multiple choice, true / false and short answer with a word limit the teacher fixes. Correct answers stay on the server until the result is released, so a paper cannot be read off a student's screen. Results, performance insights, AI study recommendations and verifiable certificates follow automatically, and each role sees only its own dashboard.",
   members: [
     { name: "Supratik Saha", role: "Team Lead" },
     { name: "Swastika Banik", role: "Project Member" },
@@ -108,7 +108,7 @@ export function AboutSection() {
     <section id="about" className="mx-auto max-w-6xl px-4 py-20">
       <h2 className="text-3xl font-bold md:text-4xl">About this project</h2>
       <p className="mt-3 max-w-xl text-muted-foreground">
-        What ExamHub is, who built it and who guided us.
+        What ExamHubb is, who built it and who guided us.
       </p>
       <div className="mt-8">
         <AboutBody />
@@ -127,7 +127,7 @@ export function AboutDialogButton() {
       </DialogTrigger>
       <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>About ExamHub</DialogTitle>
+          <DialogTitle>About ExamHubb</DialogTitle>
           <DialogDescription>
             {projectInfo.college} · {projectInfo.course} · {projectInfo.semester} ·{" "}
             {projectInfo.session}

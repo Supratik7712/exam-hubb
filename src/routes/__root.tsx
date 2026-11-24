@@ -83,10 +83,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ExamHub – Intelligent Online Examination System" },
+      { title: "ExamHubb – Intelligent Online Examination System" },
       { name: "description", content: "Create, take and evaluate online exams with analytics and AI." },
-      { name: "author", content: "ExamHub" },
-      { property: "og:title", content: "ExamHub – Intelligent Online Examination System" },
+      { name: "author", content: "ExamHubb" },
+      { property: "og:title", content: "ExamHubb – Intelligent Online Examination System" },
       { property: "og:description", content: "Create, take and evaluate online exams with analytics and AI." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

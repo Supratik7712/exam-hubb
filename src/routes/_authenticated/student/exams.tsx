@@ -14,7 +14,7 @@ import { studentExamsQuery, startAttempt, type StudentExam } from "@/lib/attempt
 import { pageHead } from "@/lib/page-head";
 
 export const Route = createFileRoute("/_authenticated/student/exams")({
-  head: () => pageHead("Available exams", "Exams you can take now or soon on ExamHub."),
+  head: () => pageHead("Available exams", "Exams you can take now or soon on ExamHubb."),
   loader: ({ context }) => context.queryClient.ensureQueryData(studentExamsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: StudentExams,
