@@ -126,6 +126,7 @@ export type Database = {
           status: string
           student_id: string
           submitted_at: string | null
+          tab_switches: number
           total_marks: number
         }
         Insert: {
@@ -137,6 +138,7 @@ export type Database = {
           status?: string
           student_id: string
           submitted_at?: string | null
+          tab_switches?: number
           total_marks?: number
         }
         Update: {
@@ -148,6 +150,7 @@ export type Database = {
           status?: string
           student_id?: string
           submitted_at?: string | null
+          tab_switches?: number
           total_marks?: number
         }
         Relationships: [
@@ -211,6 +214,7 @@ export type Database = {
       feedback: {
         Row: {
           admin_note: string
+          attempt_id: string | null
           category: string
           created_at: string
           id: string
@@ -221,6 +225,7 @@ export type Database = {
         }
         Insert: {
           admin_note?: string
+          attempt_id?: string | null
           category?: string
           created_at?: string
           id?: string
@@ -231,12 +236,40 @@ export type Database = {
         }
         Update: {
           admin_note?: string
+          attempt_id?: string | null
           category?: string
           created_at?: string
           id?: string
           message?: string
           rating?: number | null
           status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          id: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title?: string
           user_id?: string
         }
         Relationships: []
@@ -339,6 +372,42 @@ export type Database = {
           },
         ]
       }
+      study_materials: {
+        Row: {
+          created_at: string
+          description: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          subject: string
+          teacher_id: string
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          file_name: string
+          file_path: string
+          file_size?: number
+          id?: string
+          subject?: string
+          teacher_id?: string
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          subject?: string
+          teacher_id?: string
+          title?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           id: string
@@ -403,6 +472,8 @@ export type Database = {
         Args: { _action: string; _id: string }
         Returns: undefined
       }
+      mark_notifications_read: { Args: never; Returns: undefined }
+      report_tab_switch: { Args: { _attempt_id: string }; Returns: Json }
       request_teacher_access: { Args: never; Returns: undefined }
       save_answer: {
         Args: {

@@ -45,3 +45,6 @@ use the editor.
 - AI calls run only in authenticated server functions through the Lovable AI Gateway with strict JSON schemas; AI-generated questions are never saved until a teacher approves each one — keeps keys server-side and humans in control.
 - Pass mark lives in the single-row app_settings table (admin-only RPC updates) and is used by results, certificates and reports — one source of truth.
 - Explicit exam leaving saves pending answers and finalizes the attempt through the existing submission RPC before navigation — prevents abandoned attempts from remaining resumable.
+- Exam proctoring (tab-switch count, cancellation, staff notifications) is enforced by the `report_tab_switch` RPC; the client only reports events — cancellation can't be bypassed from the browser.
+- Study materials live in the private `study-materials` bucket under `<teacher_uid>/` with a `study_materials` row; reads use short-lived signed URLs for active users only.
+- Admin announcements and personal notifications render only in the header bell popover, not as page banners.

@@ -64,6 +64,13 @@
       "when": 1795276574143,
       "tag": "0008_restrict_settings_read",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1795527633193,
+      "tag": "0009_proctoring_notifications_materials",
+      "breakpoints": true
     }
   ]
 }

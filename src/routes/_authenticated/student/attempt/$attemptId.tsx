@@ -3,16 +3,18 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
-import { Clock, Flag, ChevronLeft, ChevronRight, CheckCircle2, XCircle, LogOut } from "lucide-react";
+import { Clock, Flag, ChevronLeft, ChevronRight, CheckCircle2, XCircle, LogOut, Maximize, ShieldAlert, Award, Star, Ban } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { AnswerBox } from "@/components/answer-box";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
-import { attemptQuery, saveAnswer, submitAttempt, type Attempt, type AttemptQuestion } from "@/lib/attempts.functions";
+import { attemptQuery, saveAnswer, submitAttempt, reportTabSwitch, type Attempt, type AttemptQuestion } from "@/lib/attempts.functions";
 import { secondsLeft, formatClock, percentOf, passed } from "@/lib/attempt-rules";
 import { pageHead } from "@/lib/page-head";
 import { useQuery } from "@tanstack/react-query";
-import { settingsQuery } from "@/lib/extras.functions";
+import { settingsQuery, sendFeedback } from "@/lib/extras.functions";
+import { MAX_WARNINGS, feedbackKey, isViolationTarget } from "@/lib/proctoring";
 import { cn } from "@/lib/utils";
 import { leaveExam } from "@/lib/leave-exam";
 
@@ -48,7 +50,39 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const pending = useRef<Record<string, Ans>>({});
   const submitted = useRef(false);
+  const report = useServerFn(reportTabSwitch);
+  const [isFull, setIsFull] = useState(false);
+  const [fsUnavailable, setFsUnavailable] = useState(false);
+  const [warning, setWarning] = useState<number | null>(null);
+  const [cancelled, setCancelled] = useState(false);
+  const lastViolation = useRef(0);
   const q = attempt.questions[idx];
+
+  async function enterFullscreen() {
+    try { await document.documentElement.requestFullscreen(); }
+    catch { setFsUnavailable(true); toast.warning("Full screen isn't available in this window — the exam is still proctored."); }
+  }
+  async function exitFullscreen() { if (document.fullscreenElement) await document.exitFullscreen().catch(() => undefined); }
+  async function violation() {
+    if (submitted.current) return;
+    const now = Date.now(); if (now - lastViolation.current < 2000) return; lastViolation.current = now;
+    try {
+      const r = await report({ data: { id: attempt.id } });
+      if (r.cancelled) {
+        submitted.current = true; setCancelled(true); setWarning(null); void exitFullscreen();
+        void qc.invalidateQueries({ queryKey: ["student-exams"] });
+      } else setWarning(r.count);
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't record the tab switch"); }
+  }
+  useEffect(() => {
+    const onFs = () => { const f = !!document.fullscreenElement; setIsFull(f); if (!f) void violation(); };
+    const onVis = () => { if (document.visibilityState === "hidden") void violation(); };
+    const onBlur = () => void violation();
+    document.addEventListener("fullscreenchange", onFs); document.addEventListener("visibilitychange", onVis); window.addEventListener("blur", onBlur);
+    setIsFull(!!document.fullscreenElement);
+    return () => { document.removeEventListener("fullscreenchange", onFs); document.removeEventListener("visibilitychange", onVis); window.removeEventListener("blur", onBlur); void exitFullscreen(); };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function flush(qid: string) {
     const a = pending.current[qid]; if (!a) return;
@@ -71,6 +105,8 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
     try {
       await Promise.all(Object.keys(pending.current).map(flush));
       await submit({ data: { id: attempt.id } });
+      sessionStorage.setItem(feedbackKey(attempt.id), "1");
+      void exitFullscreen();
       toast.success(auto ? "Time's up — your exam was submitted" : "Exam submitted");
     } catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't submit"); submitted.current = false; }
     finally {
@@ -85,7 +121,7 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
     try {
       await leaveExam(
         async () => { await Promise.all(Object.keys(pending.current).map(flush)); },
-        async () => { await submit({ data: { id: attempt.id } }); },
+        async () => { await submit({ data: { id: attempt.id } }); void exitFullscreen(); },
         async () => {
           await qc.invalidateQueries({ queryKey: ["student-exams"] });
           qc.removeQueries({ queryKey: ["attempt", attempt.id] });
@@ -114,8 +150,17 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
   if (!q) return <p>This exam has no questions.</p>;
   const a = answers[q.id]!;
   const done = attempt.questions.filter(x => answered(answers[x.id])).length;
-  return <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
-    <section className="space-y-5">
+  const block = (e: React.SyntheticEvent) => { if (isViolationTarget(e.target)) e.preventDefault(); };
+  const gate = !isFull && !fsUnavailable && !cancelled;
+  return <div className="fixed inset-0 z-40 overflow-y-auto bg-background" onCopy={block} onCut={block} onContextMenu={block} onDragStart={block}>
+    <div className="sticky top-0 z-10 flex items-center gap-2 border-b bg-background/95 px-4 py-2 text-xs text-muted-foreground backdrop-blur md:px-8"><ShieldAlert className="size-4 text-primary" />Proctored exam · copying is disabled · tab switches: {warning ?? 0}/{MAX_WARNINGS} warnings</div>
+    {gate && <div className="fixed inset-0 z-30 grid place-items-center bg-background/95 p-6"><div className="max-w-md space-y-4 rounded-2xl border bg-card p-8 text-center shadow-soft">
+      <Maximize className="mx-auto size-10 text-primary" /><h2 className="text-2xl font-bold">Full-screen proctored exam</h2>
+      <ul className="space-y-1 text-left text-sm text-muted-foreground"><li>• The exam runs in full screen. Split screen is not allowed.</li><li>• Copying question text is disabled.</li><li>• Leaving full screen or switching tabs/windows gives a warning. After {MAX_WARNINGS} warnings, the next switch cancels your exam.</li><li>• Your teacher and the admin are notified of every warning.</li></ul>
+      <Button size="lg" className="w-full" onClick={() => void enterFullscreen()}><Maximize />{warning ? "Return to full screen" : "Enter full screen & start"}</Button>
+    </div></div>}
+  <div className="mx-auto grid max-w-6xl gap-6 p-4 md:p-8 lg:grid-cols-[1fr_260px]">
+    <section className="select-none space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div><p className="text-sm text-muted-foreground">{attempt.exam.subject}</p><h2 className="break-words text-2xl font-bold">{attempt.exam.title}</h2></div>
         <div className="flex items-center gap-2">
@@ -143,7 +188,7 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
         </div>
       </article>
     </section>
-    <aside className="space-y-4 rounded-lg border bg-card p-5 lg:sticky lg:top-20 lg:self-start">
+    <aside className="space-y-4 rounded-lg border bg-card p-5 lg:sticky lg:top-14 lg:self-start">
       <div className="flex items-center justify-between text-sm"><span className="font-semibold">Questions</span><span className="text-muted-foreground">{saving === "saving" ? "Saving…" : saving === "saved" ? "All changes saved" : saving === "error" ? "Not saved" : ""}</span></div>
       <div className="grid grid-cols-5 gap-2">{attempt.questions.map((x, i) => { const s = answers[x.id]; return <button key={x.id} type="button" aria-label={`Question ${i + 1}`} onClick={() => setIdx(i)}
         className={cn("relative grid h-9 place-items-center rounded-md border text-sm font-semibold", answered(s) ? "border-primary bg-primary text-primary-foreground" : "bg-background", i === idx && "ring-2 ring-ring ring-offset-2")}>{i + 1}{s?.marked_for_review && <span className="absolute -right-1 -top-1 size-2.5 rounded-full bg-warning" />}</button>; })}</div>
@@ -160,20 +205,61 @@ function ExamScreen({ attempt }: { attempt: Attempt }) {
         <div className="flex justify-end gap-2"><Button variant="outline" onClick={() => setLeaving(false)} disabled={submitting}>Stay in exam</Button><Button variant="destructive" onClick={() => void leave()} disabled={submitting}>{submitting ? "Ending exam…" : "Quit exam"}</Button></div>
       </DialogContent>
     </Dialog>
+    <Dialog open={warning != null && !cancelled} onOpenChange={o => { if (!o) setWarning(null); }}>
+      <DialogContent><DialogTitle className="flex items-center gap-2 text-destructive"><ShieldAlert className="size-5" />Warning {warning} of {MAX_WARNINGS}</DialogTitle>
+        <DialogDescription>You left the exam window (switched tab, app or exited full screen). This has been reported to your teacher and the admin. {warning != null && warning >= MAX_WARNINGS ? "This is your last warning — the next switch cancels your exam." : `After ${MAX_WARNINGS} warnings, the next switch cancels your exam.`}</DialogDescription>
+        <div className="flex justify-end"><Button onClick={() => { setWarning(null); if (!fsUnavailable) void enterFullscreen(); }}>Back to exam</Button></div>
+      </DialogContent>
+    </Dialog>
+    <Dialog open={cancelled}>
+      <DialogContent onEscapeKeyDown={e => e.preventDefault()} onPointerDownOutside={e => e.preventDefault()} className="[&>button]:hidden">
+        <DialogTitle className="flex items-center gap-2 text-destructive"><Ban className="size-5" />Exam cancelled</DialogTitle>
+        <DialogDescription>Your exam has been cancelled because you switched tabs more than {MAX_WARNINGS} times. To protect the honesty of the exam, this attempt scores 0. Your teacher and the admin have been notified.</DialogDescription>
+        <div className="flex justify-end"><Button onClick={() => { qc.removeQueries({ queryKey: ["attempt", attempt.id] }); void navigate({ to: "/student/exams" }); }}>Back to exams</Button></div>
+      </DialogContent>
+    </Dialog>
+  </div>
   </div>;
+}
+
+function FeedbackPrompt({ attempt }: { attempt: Attempt }) {
+  const send = useServerFn(sendFeedback);
+  const [open, setOpen] = useState(false); const [rating, setRating] = useState(0); const [comment, setComment] = useState(""); const [busy, setBusy] = useState(false);
+  useEffect(() => { if (sessionStorage.getItem(feedbackKey(attempt.id))) setOpen(true); }, [attempt.id]);
+  function close() { sessionStorage.removeItem(feedbackKey(attempt.id)); setOpen(false); }
+  async function submit() {
+    setBusy(true);
+    try { await send({ data: { category: "Exam", rating, message: comment.trim() ? `${attempt.exam.title}: ${comment.trim()}` : `${attempt.exam.title}: no comment`, attempt_id: attempt.id } }); toast.success("Thanks for your feedback!"); close(); }
+    catch (e) { toast.error(e instanceof Error ? e.message : "Couldn't send feedback"); } finally { setBusy(false); }
+  }
+  return <Dialog open={open} onOpenChange={o => { if (!o) close(); }}>
+    <DialogContent><DialogTitle>How was this exam?</DialogTitle><DialogDescription>Rate "{attempt.exam.title}". Your feedback goes to the admin.</DialogDescription>
+      <div className="flex justify-center gap-1" role="radiogroup" aria-label="Rating">{[1, 2, 3, 4, 5].map(n => <button key={n} type="button" role="radio" aria-checked={rating === n} aria-label={`${n} star${n > 1 ? "s" : ""}`} onClick={() => setRating(n)} className="rounded p-1 transition hover:scale-110">
+        <Star className={cn("size-9", n <= rating ? "fill-warning text-warning" : "text-muted-foreground")} /></button>)}</div>
+      <Textarea placeholder="Any comments? (optional)" value={comment} onChange={e => setComment(e.target.value)} maxLength={1000} rows={3} />
+      <div className="flex justify-end gap-2"><Button variant="ghost" onClick={close} disabled={busy}>Skip</Button><Button onClick={() => void submit()} disabled={busy || rating === 0}>{busy ? "Sending…" : "Submit feedback"}</Button></div>
+    </DialogContent>
+  </Dialog>;
 }
 
 function ResultScreen({ attempt }: { attempt: Attempt }) {
   const passMark = useQuery(settingsQuery).data?.pass_percent ?? 40;
   const graded = attempt.status === "graded"; const score = attempt.score ?? 0;
+  const isPass = graded && passed(score, attempt.total_marks, passMark);
+  if (attempt.status === "cancelled") return <div className="mx-auto max-w-xl rounded-2xl border bg-card p-8 text-center shadow-soft">
+    <Ban className="mx-auto size-10 text-destructive" /><h2 className="mt-3 text-2xl font-bold">Exam cancelled</h2>
+    <p className="mt-2 text-muted-foreground">This attempt at "{attempt.exam.title}" was cancelled because of repeated tab switching. It scores 0.</p>
+    <Button asChild className="mt-6"><Link to="/student/exams">Available exams</Link></Button></div>;
   return <div className="mx-auto max-w-3xl space-y-6">
+    <FeedbackPrompt attempt={attempt} />
     <div className="rounded-2xl border bg-card p-8 text-center shadow-soft">
       <p className="text-sm text-muted-foreground">{attempt.exam.subject}</p>
       <h2 className="mt-1 break-words text-2xl font-bold">{attempt.exam.title}</h2>
       <p className="mt-6 font-display text-5xl font-extrabold">{score}<span className="text-2xl text-muted-foreground"> / {attempt.total_marks}</span></p>
       <p className="mt-2 text-muted-foreground">{percentOf(score, attempt.total_marks)}%</p>
       <div className="mt-4">{graded ? <Badge variant={passed(score, attempt.total_marks, passMark) ? "default" : "destructive"}>{passed(score, attempt.total_marks, passMark) ? "Pass" : "Fail"}</Badge> : <Badge variant="secondary">Short answers awaiting teacher marking</Badge>}</div>
-      <div className="mt-6 flex justify-center gap-2"><Button asChild variant="outline"><Link to="/student/results">All results</Link></Button><Button asChild><Link to="/student/exams">Available exams</Link></Button></div>
+      <div className="mt-6 flex flex-wrap justify-center gap-2">{isPass ? <Button asChild><Link to="/student/certificates" search={{ open: attempt.id }}><Award />View certificate</Link></Button>
+        : !graded ? <Button disabled variant="secondary" title="Available once your teacher finishes marking"><Award />Certificate after marking</Button> : null}<Button asChild variant="outline"><Link to="/student/results">All results</Link></Button><Button asChild variant="outline"><Link to="/student/exams">Available exams</Link></Button></div>
     </div>
     {attempt.review ? <div className="space-y-3"><h3 className="text-lg font-bold">Answer review</h3>{attempt.questions.map((q, i) => <article key={q.id} className="rounded-lg border bg-card p-5">
       <div className="flex justify-between gap-2 text-sm text-muted-foreground"><span>Question {i + 1}</span><span>{q.marks_awarded ?? "—"} / {q.marks}</span></div>

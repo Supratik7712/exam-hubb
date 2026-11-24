@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { z } from "zod";
 import { Award, Printer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/app-shell";
@@ -12,6 +13,7 @@ import { pageHead } from "@/lib/page-head";
 const certsQuery = queryOptions({ queryKey: ["certificates"], staleTime: 30_000, queryFn: () => getCertificates() });
 export const Route = createFileRoute("/_authenticated/student/certificates")({
   head: () => pageHead("My certificates", "Certificates for ExamHub exams you passed."),
+  validateSearch: z.object({ open: z.string().optional() }),
   loader: ({ context }) => context.queryClient.ensureQueryData(certsQuery),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: Certs,
@@ -19,7 +21,9 @@ export const Route = createFileRoute("/_authenticated/student/certificates")({
 
 function Certs() {
   const { data } = useSuspenseQuery(certsQuery);
+  const { open: openId } = Route.useSearch();
   const [open, setOpen] = useState<Certificate | null>(null);
+  useEffect(() => { if (openId) setOpen(data.find(c => c.id === openId) ?? null); }, [openId, data]);
   return <div className="space-y-6">
     <div><h2 className="text-3xl font-bold">Certificates</h2><p className="mt-1 text-muted-foreground">You earn a certificate for every marked exam you pass.</p></div>
     {data.length ? <div className="grid gap-4 md:grid-cols-2">{data.map(c => <article key={c.id} className="rounded-2xl border bg-card p-5">
@@ -40,7 +44,7 @@ function Certs() {
           <p className="mt-6 text-xs text-muted-foreground">Issued {new Date(open.issued_at).toLocaleDateString()} · Verification code <span className="font-mono">{open.code}</span></p>
           <p className="text-xs text-muted-foreground">Verify at {typeof window !== "undefined" ? window.location.origin : ""}/verify/{open.code}</p>
         </div>}
-        <div className="flex justify-end gap-2 print:hidden">{open && <Button variant="outline" asChild><Link to="/verify/$code" params={{ code: open.code }}>Verification page</Link></Button>}<Button onClick={() => window.print()}><Printer />Print / save PDF</Button></div>
+        <div className="flex justify-end gap-2 print:hidden">{open && <Button variant="outline" asChild><Link to="/verify/$code" params={{ code: open.code }}>Verification page</Link></Button>}<Button onClick={() => window.print()}><Printer />Download / print PDF</Button></div>
       </DialogContent>
     </Dialog>
   </div>;

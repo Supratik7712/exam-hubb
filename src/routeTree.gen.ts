@@ -31,14 +31,15 @@ import { Route as AuthenticatedStudentIndexRouteImport } from './routes/_authent
 import { Route as AuthenticatedStudentCertificatesRouteImport } from './routes/_authenticated/student/certificates'
 import { Route as AuthenticatedStudentExamsRouteImport } from './routes/_authenticated/student/exams'
 import { Route as AuthenticatedStudentFeedbackRouteImport } from './routes/_authenticated/student/feedback'
+import { Route as AuthenticatedStudentMaterialsRouteImport } from './routes/_authenticated/student/materials'
 import { Route as AuthenticatedStudentPerformanceRouteImport } from './routes/_authenticated/student/performance'
 import { Route as AuthenticatedStudentRecommendationsRouteImport } from './routes/_authenticated/student/recommendations'
 import { Route as AuthenticatedStudentResultsRouteImport } from './routes/_authenticated/student/results'
 import { Route as AuthenticatedTeacherIndexRouteImport } from './routes/_authenticated/teacher/index'
 import { Route as AuthenticatedTeacherAiGeneratorRouteImport } from './routes/_authenticated/teacher/ai-generator'
 import { Route as AuthenticatedTeacherExamsRouteImport } from './routes/_authenticated/teacher/exams'
+import { Route as AuthenticatedTeacherMaterialsRouteImport } from './routes/_authenticated/teacher/materials'
 import { Route as AuthenticatedTeacherMonitoringRouteImport } from './routes/_authenticated/teacher/monitoring'
-import { Route as AuthenticatedTeacherQuestionsRouteImport } from './routes/_authenticated/teacher/questions'
 import { Route as AuthenticatedTeacherResultsRouteImport } from './routes/_authenticated/teacher/results'
 import { Route as AuthenticatedStudentAttemptAttemptIdRouteImport } from './routes/_authenticated/student/attempt/$attemptId'
 
@@ -161,6 +162,12 @@ const AuthenticatedStudentFeedbackRoute =
     path: '/feedback',
     getParentRoute: () => AuthenticatedStudentRouteRoute,
   } as any)
+const AuthenticatedStudentMaterialsRoute =
+  AuthenticatedStudentMaterialsRouteImport.update({
+    id: '/materials',
+    path: '/materials',
+    getParentRoute: () => AuthenticatedStudentRouteRoute,
+  } as any)
 const AuthenticatedStudentPerformanceRoute =
   AuthenticatedStudentPerformanceRouteImport.update({
     id: '/performance',
@@ -197,16 +204,16 @@ const AuthenticatedTeacherExamsRoute =
     path: '/exams',
     getParentRoute: () => AuthenticatedTeacherRouteRoute,
   } as any)
+const AuthenticatedTeacherMaterialsRoute =
+  AuthenticatedTeacherMaterialsRouteImport.update({
+    id: '/materials',
+    path: '/materials',
+    getParentRoute: () => AuthenticatedTeacherRouteRoute,
+  } as any)
 const AuthenticatedTeacherMonitoringRoute =
   AuthenticatedTeacherMonitoringRouteImport.update({
     id: '/monitoring',
     path: '/monitoring',
-    getParentRoute: () => AuthenticatedTeacherRouteRoute,
-  } as any)
-const AuthenticatedTeacherQuestionsRoute =
-  AuthenticatedTeacherQuestionsRouteImport.update({
-    id: '/questions',
-    path: '/questions',
     getParentRoute: () => AuthenticatedTeacherRouteRoute,
   } as any)
 const AuthenticatedTeacherResultsRoute =
@@ -242,13 +249,14 @@ export interface FileRoutesByFullPath {
   '/student/certificates': typeof AuthenticatedStudentCertificatesRoute
   '/student/exams': typeof AuthenticatedStudentExamsRoute
   '/student/feedback': typeof AuthenticatedStudentFeedbackRoute
+  '/student/materials': typeof AuthenticatedStudentMaterialsRoute
   '/student/performance': typeof AuthenticatedStudentPerformanceRoute
   '/student/recommendations': typeof AuthenticatedStudentRecommendationsRoute
   '/student/results': typeof AuthenticatedStudentResultsRoute
   '/teacher/ai-generator': typeof AuthenticatedTeacherAiGeneratorRoute
   '/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/teacher/materials': typeof AuthenticatedTeacherMaterialsRoute
   '/teacher/monitoring': typeof AuthenticatedTeacherMonitoringRoute
-  '/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/teacher/results': typeof AuthenticatedTeacherResultsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/student/': typeof AuthenticatedStudentIndexRoute
@@ -272,13 +280,14 @@ export interface FileRoutesByTo {
   '/student/certificates': typeof AuthenticatedStudentCertificatesRoute
   '/student/exams': typeof AuthenticatedStudentExamsRoute
   '/student/feedback': typeof AuthenticatedStudentFeedbackRoute
+  '/student/materials': typeof AuthenticatedStudentMaterialsRoute
   '/student/performance': typeof AuthenticatedStudentPerformanceRoute
   '/student/recommendations': typeof AuthenticatedStudentRecommendationsRoute
   '/student/results': typeof AuthenticatedStudentResultsRoute
   '/teacher/ai-generator': typeof AuthenticatedTeacherAiGeneratorRoute
   '/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/teacher/materials': typeof AuthenticatedTeacherMaterialsRoute
   '/teacher/monitoring': typeof AuthenticatedTeacherMonitoringRoute
-  '/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/teacher/results': typeof AuthenticatedTeacherResultsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/student': typeof AuthenticatedStudentIndexRoute
@@ -307,13 +316,14 @@ export interface FileRoutesById {
   '/_authenticated/student/certificates': typeof AuthenticatedStudentCertificatesRoute
   '/_authenticated/student/exams': typeof AuthenticatedStudentExamsRoute
   '/_authenticated/student/feedback': typeof AuthenticatedStudentFeedbackRoute
+  '/_authenticated/student/materials': typeof AuthenticatedStudentMaterialsRoute
   '/_authenticated/student/performance': typeof AuthenticatedStudentPerformanceRoute
   '/_authenticated/student/recommendations': typeof AuthenticatedStudentRecommendationsRoute
   '/_authenticated/student/results': typeof AuthenticatedStudentResultsRoute
   '/_authenticated/teacher/ai-generator': typeof AuthenticatedTeacherAiGeneratorRoute
   '/_authenticated/teacher/exams': typeof AuthenticatedTeacherExamsRoute
+  '/_authenticated/teacher/materials': typeof AuthenticatedTeacherMaterialsRoute
   '/_authenticated/teacher/monitoring': typeof AuthenticatedTeacherMonitoringRoute
-  '/_authenticated/teacher/questions': typeof AuthenticatedTeacherQuestionsRoute
   '/_authenticated/teacher/results': typeof AuthenticatedTeacherResultsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/student/': typeof AuthenticatedStudentIndexRoute
@@ -342,13 +352,14 @@ export interface FileRouteTypes {
     | '/student/certificates'
     | '/student/exams'
     | '/student/feedback'
+    | '/student/materials'
     | '/student/performance'
     | '/student/recommendations'
     | '/student/results'
     | '/teacher/ai-generator'
     | '/teacher/exams'
+    | '/teacher/materials'
     | '/teacher/monitoring'
-    | '/teacher/questions'
     | '/teacher/results'
     | '/admin/'
     | '/student/'
@@ -372,13 +383,14 @@ export interface FileRouteTypes {
     | '/student/certificates'
     | '/student/exams'
     | '/student/feedback'
+    | '/student/materials'
     | '/student/performance'
     | '/student/recommendations'
     | '/student/results'
     | '/teacher/ai-generator'
     | '/teacher/exams'
+    | '/teacher/materials'
     | '/teacher/monitoring'
-    | '/teacher/questions'
     | '/teacher/results'
     | '/admin'
     | '/student'
@@ -406,13 +418,14 @@ export interface FileRouteTypes {
     | '/_authenticated/student/certificates'
     | '/_authenticated/student/exams'
     | '/_authenticated/student/feedback'
+    | '/_authenticated/student/materials'
     | '/_authenticated/student/performance'
     | '/_authenticated/student/recommendations'
     | '/_authenticated/student/results'
     | '/_authenticated/teacher/ai-generator'
     | '/_authenticated/teacher/exams'
+    | '/_authenticated/teacher/materials'
     | '/_authenticated/teacher/monitoring'
-    | '/_authenticated/teacher/questions'
     | '/_authenticated/teacher/results'
     | '/_authenticated/admin/'
     | '/_authenticated/student/'
@@ -584,6 +597,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedStudentFeedbackRouteImport
       parentRoute: typeof AuthenticatedStudentRouteRoute
     }
+    '/_authenticated/student/materials': {
+      id: '/_authenticated/student/materials'
+      path: '/materials'
+      fullPath: '/student/materials'
+      preLoaderRoute: typeof AuthenticatedStudentMaterialsRouteImport
+      parentRoute: typeof AuthenticatedStudentRouteRoute
+    }
     '/_authenticated/student/performance': {
       id: '/_authenticated/student/performance'
       path: '/performance'
@@ -626,18 +646,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTeacherExamsRouteImport
       parentRoute: typeof AuthenticatedTeacherRouteRoute
     }
+    '/_authenticated/teacher/materials': {
+      id: '/_authenticated/teacher/materials'
+      path: '/materials'
+      fullPath: '/teacher/materials'
+      preLoaderRoute: typeof AuthenticatedTeacherMaterialsRouteImport
+      parentRoute: typeof AuthenticatedTeacherRouteRoute
+    }
     '/_authenticated/teacher/monitoring': {
       id: '/_authenticated/teacher/monitoring'
       path: '/monitoring'
       fullPath: '/teacher/monitoring'
       preLoaderRoute: typeof AuthenticatedTeacherMonitoringRouteImport
-      parentRoute: typeof AuthenticatedTeacherRouteRoute
-    }
-    '/_authenticated/teacher/questions': {
-      id: '/_authenticated/teacher/questions'
-      path: '/questions'
-      fullPath: '/teacher/questions'
-      preLoaderRoute: typeof AuthenticatedTeacherQuestionsRouteImport
       parentRoute: typeof AuthenticatedTeacherRouteRoute
     }
     '/_authenticated/teacher/results': {
@@ -685,6 +705,7 @@ interface AuthenticatedStudentRouteRouteChildren {
   AuthenticatedStudentCertificatesRoute: typeof AuthenticatedStudentCertificatesRoute
   AuthenticatedStudentExamsRoute: typeof AuthenticatedStudentExamsRoute
   AuthenticatedStudentFeedbackRoute: typeof AuthenticatedStudentFeedbackRoute
+  AuthenticatedStudentMaterialsRoute: typeof AuthenticatedStudentMaterialsRoute
   AuthenticatedStudentPerformanceRoute: typeof AuthenticatedStudentPerformanceRoute
   AuthenticatedStudentRecommendationsRoute: typeof AuthenticatedStudentRecommendationsRoute
   AuthenticatedStudentResultsRoute: typeof AuthenticatedStudentResultsRoute
@@ -698,6 +719,7 @@ const AuthenticatedStudentRouteRouteChildren: AuthenticatedStudentRouteRouteChil
       AuthenticatedStudentCertificatesRoute,
     AuthenticatedStudentExamsRoute: AuthenticatedStudentExamsRoute,
     AuthenticatedStudentFeedbackRoute: AuthenticatedStudentFeedbackRoute,
+    AuthenticatedStudentMaterialsRoute: AuthenticatedStudentMaterialsRoute,
     AuthenticatedStudentPerformanceRoute: AuthenticatedStudentPerformanceRoute,
     AuthenticatedStudentRecommendationsRoute:
       AuthenticatedStudentRecommendationsRoute,
@@ -715,8 +737,8 @@ const AuthenticatedStudentRouteRouteWithChildren =
 interface AuthenticatedTeacherRouteRouteChildren {
   AuthenticatedTeacherAiGeneratorRoute: typeof AuthenticatedTeacherAiGeneratorRoute
   AuthenticatedTeacherExamsRoute: typeof AuthenticatedTeacherExamsRoute
+  AuthenticatedTeacherMaterialsRoute: typeof AuthenticatedTeacherMaterialsRoute
   AuthenticatedTeacherMonitoringRoute: typeof AuthenticatedTeacherMonitoringRoute
-  AuthenticatedTeacherQuestionsRoute: typeof AuthenticatedTeacherQuestionsRoute
   AuthenticatedTeacherResultsRoute: typeof AuthenticatedTeacherResultsRoute
   AuthenticatedTeacherIndexRoute: typeof AuthenticatedTeacherIndexRoute
 }
@@ -725,8 +747,8 @@ const AuthenticatedTeacherRouteRouteChildren: AuthenticatedTeacherRouteRouteChil
   {
     AuthenticatedTeacherAiGeneratorRoute: AuthenticatedTeacherAiGeneratorRoute,
     AuthenticatedTeacherExamsRoute: AuthenticatedTeacherExamsRoute,
+    AuthenticatedTeacherMaterialsRoute: AuthenticatedTeacherMaterialsRoute,
     AuthenticatedTeacherMonitoringRoute: AuthenticatedTeacherMonitoringRoute,
-    AuthenticatedTeacherQuestionsRoute: AuthenticatedTeacherQuestionsRoute,
     AuthenticatedTeacherResultsRoute: AuthenticatedTeacherResultsRoute,
     AuthenticatedTeacherIndexRoute: AuthenticatedTeacherIndexRoute,
   }

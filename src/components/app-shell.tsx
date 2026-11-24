@@ -2,9 +2,10 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { settingsQuery } from "@/lib/extras.functions";
+import { NotificationBell } from "@/components/notification-bell";
 import {
   LayoutDashboard, BookOpen, ClipboardList, BarChart3, MessageSquare, Award, Sparkles, Users, FileQuestion,
-  Activity, Settings, UserCircle, LogOut, Menu, Bell, type LucideIcon,
+  Activity, Settings, UserCircle, LogOut, Menu, type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/logo";
@@ -20,6 +21,7 @@ const NAV: Record<AppRole, NavItem[]> = {
   student: [
     { label: "Dashboard", icon: LayoutDashboard, to: "/student" },
     { label: "Available exams", icon: BookOpen, to: "/student/exams" },
+    { label: "Study materials", icon: FileQuestion, to: "/student/materials" },
     { label: "Results", icon: ClipboardList, to: "/student/results" },
     { label: "Performance", icon: BarChart3, to: "/student/performance" },
     { label: "Recommendations", icon: Sparkles, to: "/student/recommendations" },
@@ -30,7 +32,7 @@ const NAV: Record<AppRole, NavItem[]> = {
   teacher: [
     { label: "Dashboard", icon: LayoutDashboard, to: "/teacher" },
     { label: "Exams", icon: BookOpen, to: "/teacher/exams" },
-    { label: "Question bank", icon: FileQuestion, to: "/teacher/questions" },
+    { label: "Study materials", icon: FileQuestion, to: "/teacher/materials" },
     { label: "AI generator", icon: Sparkles, to: "/teacher/ai-generator" },
     { label: "Results", icon: ClipboardList, to: "/teacher/results" },
     { label: "Monitoring", icon: Activity, to: "/teacher/monitoring" },
@@ -104,7 +106,7 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></Button>
           <h1 className="truncate text-lg font-bold">{title}</h1>
           <div className="ml-auto flex items-center gap-2">
-            <Button variant="ghost" size="icon" aria-label="Notifications"><Bell /></Button>
+            <NotificationBell announcement={announcement} />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2 rounded-full border bg-card py-1 pl-1 pr-3 text-sm">
@@ -129,7 +131,7 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
             </DropdownMenu>
           </div>
         </header>
-        <main className={cn("flex-1 p-4 md:p-8")}>{announcement && <div role="status" className="mb-6 rounded-xl border bg-accent px-4 py-3 text-sm text-accent-foreground">{announcement}</div>}{children}</main>
+        <main className={cn("flex-1 p-4 md:p-8")}>{children}</main>
       </div>
     </div>
   );

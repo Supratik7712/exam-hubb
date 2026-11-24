@@ -48,9 +48,10 @@ export const listFeedback = createServerFn({ method: "POST" }).middleware([requi
 });
 export const feedbackQuery = (all: boolean) => queryOptions({ queryKey: ["feedback", all], staleTime: 15_000, queryFn: () => listFeedback({ data: { all } }) });
 export const sendFeedback = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
-  .inputValidator(z.object({ category: z.enum(["General", "Exam", "Bug", "Suggestion"]), rating: z.number().int().min(1).max(5).nullable(), message: z.string().trim().min(1).max(3000) }))
+  .inputValidator(z.object({ category: z.enum(["General", "Exam", "Bug", "Suggestion"]), rating: z.number().int().min(1).max(5).nullable(), message: z.string().trim().max(3000), attempt_id: z.string().uuid().optional() }))
   .handler(async ({ data, context }) => {
-    const { error } = await context.supabase.from("feedback").insert({ ...data, user_id: context.userId }); if (error) throw new Error(error.message);
+    if (!data.message && !data.rating) throw new Error("Write a message or choose a rating");
+    const { error } = await context.supabase.from("feedback").insert({ ...data, attempt_id: data.attempt_id ?? null, message: data.message || "No comment", user_id: context.userId }); if (error) throw new Error(error.message);
   });
 export const updateFeedback = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
   .inputValidator(z.object({ id: z.string().uuid(), status: z.enum(["open", "reviewed", "resolved"]), note: z.string().max(2000) }))
@@ -117,3 +118,14 @@ export const generateQuestions = createServerFn({ method: "POST" }).middleware([
       return { question_text: String(q.question_text ?? ""), question_type: t, options, correct_answer: ca, word_limit: t === "SHORT_ANSWER" ? Math.min(2000, Math.max(10, Number(q.word_limit) || 100)) : null, explanation: String(q.explanation ?? ""), difficulty: data.difficulty } as GeneratedQuestion;
     }).filter(q => q.question_text && (q.question_type === "SHORT_ANSWER" || q.options.length >= 2));
   });
+
+// ---------- Notifications ----------
+export type AppNotification = { id: string; title: string; body: string; read_at: string | null; created_at: string };
+export const listNotifications = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
+  const { data, error } = await context.supabase.from("notifications").select("id, title, body, read_at, created_at").order("created_at", { ascending: false }).limit(30);
+  if (error) throw new Error(error.message); return data as AppNotification[];
+});
+export const notificationsQuery = queryOptions({ queryKey: ["notifications"], staleTime: 30_000, refetchInterval: 60_000, queryFn: () => listNotifications() });
+export const markNotificationsRead = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
+  const { error } = await context.supabase.rpc("mark_notifications_read"); if (error) throw new Error(error.message);
+});

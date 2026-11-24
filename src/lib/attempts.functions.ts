@@ -6,7 +6,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 export type StudentExam = {
   id: string; title: string; subject: string; description: string; duration_minutes: number;
   start_at: string | null; end_at: string | null; total_marks: number; question_count: number;
-  attempt: { id: string; status: "in_progress" | "submitted" | "graded"; score: number; total_marks: number; submitted_at: string | null } | null;
+  attempt: { id: string; status: "in_progress" | "submitted" | "graded" | "cancelled"; score: number; total_marks: number; submitted_at: string | null } | null;
 };
 export type AttemptQuestion = {
   id: string; question_text: string; question_type: "MCQ" | "TRUE_FALSE" | "SHORT_ANSWER"; options: string[]; marks: number; word_limit: number | null;
@@ -14,7 +14,7 @@ export type AttemptQuestion = {
   correct_answer: number | null; explanation: string | null;
 };
 export type Attempt = {
-  id: string; status: "in_progress" | "submitted" | "graded"; deadline: string; started_at: string; submitted_at: string | null; now: string;
+  id: string; status: "in_progress" | "submitted" | "graded" | "cancelled"; deadline: string; started_at: string; submitted_at: string | null; now: string;
   score: number | null; total_marks: number; review: boolean;
   exam: { id: string; title: string; subject: string; description: string; duration_minutes: number }; questions: AttemptQuestion[];
 };
@@ -62,3 +62,8 @@ export const gradeShortAnswer = createServerFn({ method: "POST" }).middleware([r
   .handler(async ({ data, context }) => {
     const { error } = await context.supabase.rpc("grade_short_answer", { _answer_id: data.answer_id, _marks: data.marks }); if (error) throw new Error(error.message);
   });
+
+export const reportTabSwitch = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(id).handler(async ({ data, context }) => {
+  const { data: r, error } = await context.supabase.rpc("report_tab_switch", { _attempt_id: data.id }); if (error) throw new Error(error.message);
+  return JSON.parse(JSON.stringify(r)) as { count: number; cancelled: boolean };
+});
