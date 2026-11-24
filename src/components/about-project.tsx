@@ -1,4 +1,4 @@
-import { GraduationCap, Sparkles, Users } from "lucide-react";
+import { GraduationCap, Linkedin, Sparkles, Users } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,13 @@ import {
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
+export type Person = {
+  name: string;
+  role: string;
+  /** Full LinkedIn profile URL. Leave "" until the link is supplied — the icon is hidden then. */
+  linkedin: string;
+};
+
 export const projectInfo = {
   college: "MSIT Kolkata",
   course: "B.Tech CSBS — Software Engineering",
@@ -21,13 +28,16 @@ export const projectInfo = {
   summary:
     "ExamHubb is an online examination platform where teachers set the question paper, students sit for timed exams in the browser, and every paper is evaluated on the server. Questions come in three patterns — multiple choice, true / false and short answer with a word limit the teacher fixes. Correct answers stay on the server until the result is released, so a paper cannot be read off a student's screen. Results, performance insights, AI study recommendations and verifiable certificates follow automatically, and each role sees only its own dashboard.",
   members: [
-    { name: "Supratik Saha", role: "Team Lead" },
-    { name: "Swastika Banik", role: "Project Member" },
-    { name: "Suparna Das", role: "Project Member" },
-    { name: "Rashi Kumari", role: "Project Member" },
-    { name: "Swayam Roy", role: "Project Member" },
-  ],
-  guides: ["Prof. Amit Kumar Bagh", "Prof. Sneha Nandi"],
+    { name: "Supratik Saha", role: "Team Lead", linkedin: "" },
+    { name: "Swastika Banik", role: "Project Member", linkedin: "" },
+    { name: "Suparna Das", role: "Project Member", linkedin: "" },
+    { name: "Rashi Kumari", role: "Project Member", linkedin: "" },
+    { name: "Swayam Roy", role: "Project Member", linkedin: "" },
+  ] satisfies Person[],
+  guides: [
+    { name: "Prof. Amit Kumar Bagh", role: "Teacher — Software Engineering", linkedin: "" },
+    { name: "Prof. Sneha Nandi", role: "Teacher — Software Engineering", linkedin: "" },
+  ] satisfies Person[],
 };
 
 function initials(name: string) {
@@ -37,6 +47,30 @@ function initials(name: string) {
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase() ?? "")
     .join("");
+}
+
+function isProfileUrl(value: string) {
+  return /^https?:\/\/([\w-]+\.)?linkedin\.com\//i.test(value.trim());
+}
+
+export function LinkedInLink({ person, className }: { person: Person; className?: string }) {
+  const url = person.linkedin.trim();
+  if (!isProfileUrl(url)) return null;
+  return (
+    <a
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={`${person.name} on LinkedIn`}
+      title="Open LinkedIn profile"
+      className={cn(
+        "grid size-8 shrink-0 place-items-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-highlight hover:bg-accent hover:text-highlight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+        className,
+      )}
+    >
+      <Linkedin className="size-4" />
+    </a>
+  );
 }
 
 export function AboutBody({ stacked = false }: { stacked?: boolean }) {
@@ -72,10 +106,11 @@ export function AboutBody({ stacked = false }: { stacked?: boolean }) {
                 <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
                   {initials(m.name)}
                 </span>
-                <span className="min-w-0">
+                <span className="min-w-0 flex-1">
                   <span className="block font-semibold">{m.name}</span>
                   <span className="block text-xs text-muted-foreground">{m.role}</span>
                 </span>
+                <LinkedInLink person={m} />
               </li>
             ))}
           </ul>
@@ -87,9 +122,15 @@ export function AboutBody({ stacked = false }: { stacked?: boolean }) {
           </h3>
           <ul className="mt-4 space-y-3">
             {projectInfo.guides.map((g) => (
-              <li key={g} className="rounded-xl border border-border/70 bg-accent/60 px-4 py-3">
-                <span className="block font-semibold">{g}</span>
-                <span className="block text-xs text-muted-foreground">{projectInfo.guideRole}</span>
+              <li
+                key={g.name}
+                className="flex items-center gap-3 rounded-xl border border-border/70 bg-accent/60 px-4 py-3"
+              >
+                <span className="min-w-0 flex-1">
+                  <span className="block font-semibold">{g.name}</span>
+                  <span className="block text-xs text-muted-foreground">{g.role}</span>
+                </span>
+                <LinkedInLink person={g} />
               </li>
             ))}
           </ul>
