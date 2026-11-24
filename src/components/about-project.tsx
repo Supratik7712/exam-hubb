@@ -35,7 +35,7 @@ export const projectInfo = {
     { name: "Swayam Roy", role: "Project Member", linkedin: "" },
   ] satisfies Person[],
   guides: [
-    { name: "Prof. Amit Kumar Bagh", role: "Teacher — Software Engineering", linkedin: "" },
+    { name: "Prof. Amit Kumar Bagh", role: "Teacher — Software Engineering", linkedin: "https://www.linkedin.com/in/amit-kumar-bag-3287b8156/" },
     { name: "Prof. Sneha Nandi", role: "Teacher — Software Engineering", linkedin: "" },
   ] satisfies Person[],
 };
