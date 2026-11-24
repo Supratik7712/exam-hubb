@@ -28,7 +28,7 @@ export const projectInfo = {
   summary:
     "ExamHubb is an online examination platform where teachers set the question paper, students sit for timed exams in the browser, and every paper is evaluated on the server. Questions come in three patterns — multiple choice, true / false and short answer with a word limit the teacher fixes. Correct answers stay on the server until the result is released, so a paper cannot be read off a student's screen. Results, performance insights, AI study recommendations and verifiable certificates follow automatically, and each role sees only its own dashboard.",
   members: [
-    { name: "Supratik Saha", role: "Team Lead", linkedin: "" },
+    { name: "Supratik Saha", role: "Team Lead", linkedin: "https://www.linkedin.com/in/supratiksahass/" },
     { name: "Swastika Banik", role: "Project Member", linkedin: "" },
     { name: "Suparna Das", role: "Project Member", linkedin: "" },
     { name: "Rashi Kumari", role: "Project Member", linkedin: "" },
