@@ -62,7 +62,8 @@ function AuthPage() {
 
   // Already signed in (or returning from Google/Lovable): go to dashboard.
   useEffect(() => {
-    supabase.auth.getUser().then(async ({ data }) => { if (data.user) await goHome(takeSignInRole()); }).catch((error: Error) => toast.error(error.message));
+    // Quick local session check for the redirect only; protected pages still re-validate the user.
+    supabase.auth.getSession().then(async ({ data }) => { if (data.session?.user) await goHome(takeSignInRole()); }).catch((error: Error) => toast.error(error.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
