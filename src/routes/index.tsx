@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/logo";
-import { AboutDialogButton, AboutSection } from "@/components/about-project";
+import { AboutSection } from "@/components/about-project";
 import { useMe, homePathFor } from "@/lib/auth";
 import hero from "@/assets/hero-exam.jpg";
 
@@ -255,7 +255,6 @@ function Landing() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-muted-foreground md:flex-row">
           <Logo />
           <p>© 2026 ExamHub. All rights reserved.</p>
-          <AboutDialogButton />
         </div>
       </footer>
     </div>

@@ -5,23 +5,24 @@ import { Bell, Megaphone, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { markNotificationsRead, notificationsQuery } from "@/lib/extras.functions";
+import { markNotificationsRead, notificationsQuery, liveAnnouncementsQuery } from "@/lib/extras.functions";
 import { cn } from "@/lib/utils";
 
-const SEEN_KEY = "examhub-seen-announcement";
+const SEEN_KEY = "examhub-seen-announcements";
 
-export function NotificationBell({ announcement }: { announcement?: string | undefined }) {
+export function NotificationBell() {
   const qc = useQueryClient();
   const markRead = useServerFn(markNotificationsRead);
   const { data: items = [] } = useQuery(notificationsQuery);
   const [seen, setSeen] = useState<string | null>(null);
   useEffect(() => { setSeen(localStorage.getItem(SEEN_KEY)); }, []);
-  const newAnnouncement = !!announcement && seen !== announcement;
-  const unread = items.filter(n => !n.read_at).length + (newAnnouncement ? 1 : 0);
+  const { data: anns = [] } = useQuery(liveAnnouncementsQuery);
+  const seenSet = new Set((seen ?? "").split(",").filter(Boolean));
+  const unread = items.filter(n => !n.read_at).length + anns.filter(a => !seenSet.has(`${a.id}:${a.updated_at}`)).length;
 
   async function onOpen(open: boolean) {
     if (!open) return;
-    if (announcement) { localStorage.setItem(SEEN_KEY, announcement); setSeen(announcement); }
+    if (anns.length) { const v = anns.map(a => `${a.id}:${a.updated_at}`).join(","); localStorage.setItem(SEEN_KEY, v); setSeen(v); }
     if (items.some(n => !n.read_at)) { await markRead(); void qc.invalidateQueries({ queryKey: ["notifications"] }); }
   }
 
@@ -36,15 +37,15 @@ export function NotificationBell({ announcement }: { announcement?: string | und
       <PopoverContent align="end" className="w-[22rem] max-w-[calc(100vw-2rem)] p-0">
         <div className="flex items-center justify-between border-b px-4 py-3"><p className="text-sm font-semibold">Notifications</p>{unread > 0 && <span className="text-xs text-muted-foreground">{unread} new</span>}</div>
         <ScrollArea className="max-h-96">
-          {announcement && <div className="flex gap-3 border-b bg-accent/40 px-4 py-3">
+          {anns.map(a => <div key={a.id} className="flex gap-3 border-b bg-accent/40 px-4 py-3">
             <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><Megaphone className="size-4" /></span>
-            <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Announcement</p><p className="mt-0.5 whitespace-pre-wrap break-words text-sm">{announcement}</p></div>
-          </div>}
+            <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Announcement</p><p className="text-sm font-medium">{a.title}</p>{a.body && <p className="mt-0.5 whitespace-pre-wrap break-words text-sm text-muted-foreground">{a.body}</p>}{a.expires_at && <p className="mt-1 text-xs text-muted-foreground">Until {new Date(a.expires_at).toLocaleString()}</p>}</div>
+          </div>)}
           {items.map(n => <div key={n.id} className={cn("flex gap-3 border-b px-4 py-3 last:border-0", !n.read_at && "bg-muted/50")}>
             <span className="grid size-8 shrink-0 place-items-center rounded-full bg-muted text-destructive"><ShieldAlert className="size-4" /></span>
             <div className="min-w-0"><p className="text-sm font-medium">{n.title}</p><p className="mt-0.5 break-words text-sm text-muted-foreground">{n.body}</p><p className="mt-1 text-xs text-muted-foreground">{new Date(n.created_at).toLocaleString()}</p></div>
           </div>)}
-          {!announcement && !items.length && <p className="px-4 py-10 text-center text-sm text-muted-foreground">You're all caught up.</p>}
+          {!anns.length && !items.length && <p className="px-4 py-10 text-center text-sm text-muted-foreground">You're all caught up.</p>}
         </ScrollArea>
       </PopoverContent>
     </Popover>

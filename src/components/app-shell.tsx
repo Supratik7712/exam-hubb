@@ -1,11 +1,10 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useState, type ReactNode } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { settingsQuery } from "@/lib/extras.functions";
+import { useQueryClient } from "@tanstack/react-query";
 import { NotificationBell } from "@/components/notification-bell";
 import {
   LayoutDashboard, BookOpen, ClipboardList, BarChart3, MessageSquare, Award, Sparkles, Users, FileQuestion,
-  Activity, Settings, UserCircle, LogOut, Menu, type LucideIcon,
+  Activity, Settings, Megaphone, UserCircle, LogOut, Menu, type LucideIcon,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Logo } from "@/components/logo";
@@ -45,6 +44,7 @@ const NAV: Record<AppRole, NavItem[]> = {
     { label: "All exams", icon: BookOpen, to: "/admin/exams" },
     { label: "Feedback", icon: MessageSquare, to: "/admin/feedback" },
     { label: "Reports", icon: BarChart3, to: "/admin/reports" },
+    { label: "Announcements", icon: Megaphone, to: "/admin/announcements" },
     { label: "Settings", icon: Settings, to: "/admin/settings" },
     { label: "Profile", icon: UserCircle, to: "/profile" },
   ],
@@ -75,7 +75,6 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
   const [open, setOpen] = useState(false);
   const qc = useQueryClient();
   const navigate = useNavigate();
-  const announcement = useQuery(settingsQuery).data?.announcement;
   const name = me.profile?.full_name || me.email || "Account";
 
   async function signOut() {
@@ -107,7 +106,7 @@ export function AppShell({ me, role, title, children }: { me: Me; role: AppRole;
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)} aria-label="Open menu"><Menu /></Button>
           <h1 className="truncate text-lg font-bold">{title}</h1>
           <div className="ml-auto flex items-center gap-2">
-            <NotificationBell announcement={announcement} />
+            <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-2 rounded-full border bg-card py-1 pl-1 pr-3 text-sm">

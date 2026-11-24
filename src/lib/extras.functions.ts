@@ -129,3 +129,28 @@ export const notificationsQuery = queryOptions({ queryKey: ["notifications"], st
 export const markNotificationsRead = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).handler(async ({ context }) => {
   const { error } = await context.supabase.rpc("mark_notifications_read"); if (error) throw new Error(error.message);
 });
+
+// ---------- Announcements ----------
+export type Announcement = { id: string; title: string; body: string; audience: "all" | "student" | "teacher" | "admin"; starts_at: string; expires_at: string | null; created_at: string; updated_at: string };
+export const listAnnouncements = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(z.object({ live: z.boolean() })).handler(async ({ data, context }) => {
+  const now = new Date().toISOString();
+  let q = context.supabase.from("announcements").select("id, title, body, audience, starts_at, expires_at, created_at, updated_at").order("starts_at", { ascending: false }).limit(100);
+  if (data.live) q = q.lte("starts_at", now).or(`expires_at.is.null,expires_at.gt.${now}`);
+  const { data: rows, error } = await q; if (error) throw new Error(error.message);
+  if (!data.live) return rows as Announcement[];
+  // admins can read all rows; the bell only shows ones meant for this user's roles
+  const { data: roles } = await context.supabase.from("user_roles").select("role").eq("user_id", context.userId);
+  const mine = new Set((roles ?? []).map(r => r.role as string));
+  return (rows as Announcement[]).filter(a => a.audience === "all" || mine.has(a.audience));
+});
+export const liveAnnouncementsQuery = queryOptions({ queryKey: ["announcements", "live"], staleTime: 30_000, refetchInterval: 60_000, queryFn: () => listAnnouncements({ data: { live: true } }) });
+export const allAnnouncementsQuery = queryOptions({ queryKey: ["announcements", "all"], staleTime: 10_000, queryFn: () => listAnnouncements({ data: { live: false } }) });
+export const saveAnnouncement = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth])
+  .inputValidator(z.object({ id: z.string().uuid().nullable(), title: z.string().trim().min(1).max(120), body: z.string().max(1000), audience: z.enum(["all", "student", "teacher", "admin"]), starts_at: z.string().nullable(), expires_at: z.string().nullable() }))
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase.rpc("admin_save_announcement", { _id: data.id as string, _title: data.title, _body: data.body, _audience: data.audience, _starts: data.starts_at as string, _expires: data.expires_at as string });
+    if (error) throw new Error(error.message);
+  });
+export const deleteAnnouncement = createServerFn({ method: "POST" }).middleware([requireSupabaseAuth]).inputValidator(z.object({ id: z.string().uuid() })).handler(async ({ data, context }) => {
+  const { error } = await context.supabase.rpc("admin_delete_announcement", { _id: data.id }); if (error) throw new Error(error.message);
+});

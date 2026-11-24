@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          audience: string
+          body: string
+          created_at: string
+          created_by: string | null
+          expires_at: string | null
+          id: string
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          starts_at?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          body?: string
+          created_at?: string
+          created_by?: string | null
+          expires_at?: string | null
+          id?: string
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
           allow_teacher_requests: boolean
@@ -441,8 +477,20 @@ export type Database = {
       _finalize_expired: { Args: { _student: string }; Returns: undefined }
       admin_activity: { Args: never; Returns: Json }
       admin_approve_teacher: { Args: { _user_id: string }; Returns: undefined }
+      admin_delete_announcement: { Args: { _id: string }; Returns: undefined }
       admin_grant_admin: { Args: { _user_id: string }; Returns: undefined }
       admin_report: { Args: never; Returns: Json }
+      admin_save_announcement: {
+        Args: {
+          _audience: string
+          _body: string
+          _expires: string
+          _id: string
+          _starts: string
+          _title: string
+        }
+        Returns: string
+      }
       admin_set_account_status: {
         Args: {
           _status: Database["public"]["Enums"]["account_status"]
