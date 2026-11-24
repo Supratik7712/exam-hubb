@@ -8,7 +8,7 @@ export function Logo({ className, inverted }: { className?: string; inverted?: b
       <span
         className={cn(
           "grid size-8 place-items-center rounded-lg",
-          inverted ? "bg-sidebar-primary text-sidebar-primary-foreground" : "bg-primary text-primary-foreground",
+          inverted ? "bg-sidebar-accent ring-1 ring-sidebar-primary/60" : "bg-primary text-primary-foreground",
         )}
       >
         <img src={mark} alt="" aria-hidden="true" width={22} height={22} className="size-[22px]" />
