@@ -9,7 +9,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Logo } from "@/components/logo";
 import { AboutSection } from "@/components/about-project";
 import { useMe, homePathFor } from "@/lib/auth";
-import hero from "@/assets/hero-exam.jpg";
+import hero from "@/assets/hero-exam.webp";
 
 export const Route = createFileRoute("/")({ staticData: { sitemap: true },
   head: () => ({
@@ -173,12 +173,12 @@ function Landing() {
               <Button variant="outline" size="lg" asChild><Link to="/auth">I already have one</Link></Button>
             </div>
           </div>
-          <img src={hero} alt="Student taking an online exam on ExamHubb" width={1280} height={1024}
-            className="w-full rounded-2xl shadow-lift" />
+          <img src={hero} alt="Student taking an online exam on ExamHubb" width={1280} height={1024} fetchPriority="high" decoding="async"
+            className="aspect-[5/4] h-auto w-full rounded-2xl object-cover shadow-lift" />
         </div>
       </section>
 
-      <section id="features" className="mx-auto max-w-6xl px-4 py-20">
+      <section id="features" className="defer-render mx-auto max-w-6xl px-4 py-20">
         <h2 className="max-w-xl text-3xl font-bold md:text-4xl">Everything an examination workflow needs.</h2>
         <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
@@ -210,7 +210,7 @@ function Landing() {
         </div>
       </section>
 
-      <section id="how" className="mx-auto max-w-6xl px-4 py-20">
+      <section id="how" className="defer-render mx-auto max-w-6xl px-4 py-20">
         <h2 className="text-3xl font-bold md:text-4xl">How it works</h2>
         <ol className="mt-10 grid gap-5 md:grid-cols-4">
           {["Teacher builds and publishes an exam", "Student reads instructions and starts", "Answers autosave until submission", "Server evaluates — results & insights follow"].map((t, i) => (
@@ -222,7 +222,7 @@ function Landing() {
         </ol>
       </section>
 
-      <section id="faq" className="bg-hero border-t border-border/60">
+      <section id="faq" className="defer-render bg-hero border-t border-border/60">
         <div className="mx-auto max-w-3xl px-4 py-20">
           <span className="inline-flex items-center gap-2 rounded-full bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
             <HelpCircle className="size-3.5" /> Frequently asked questions
