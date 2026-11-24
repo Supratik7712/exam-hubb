@@ -255,6 +255,15 @@ function Landing() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-muted-foreground md:flex-row">
           <Logo />
           <p>© 2026 ExamHubb. All rights reserved.</p>
+          <p>
+            Feedback or queries?{" "}
+            <a
+              href="mailto:support-query@examhhubb.online"
+              className="font-medium text-foreground underline-offset-4 hover:underline"
+            >
+              support-query@examhhubb.online
+            </a>
+          </p>
         </div>
       </footer>
     </div>
