@@ -110,7 +110,7 @@ function AuthPage() {
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     if (data.session) { await goHome(); return; }
-    setOtpEmail(email);
+    toast.success("Account created — please sign in.");
   }
 
   async function onVerifyOtp(e: React.FormEvent<HTMLFormElement>) {
