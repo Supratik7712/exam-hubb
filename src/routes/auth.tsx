@@ -74,9 +74,8 @@ function AuthPage() {
       email: String(fd.get("email")).trim(),
       password: String(fd.get("password")),
     });
-    setBusy(false);
-    if (error) { toast.error(error.message); return; }
-    await goHome(loginRole);
+    if (error) { setBusy(false); toast.error(error.message); return; }
+    try { await goHome(loginRole); } finally { setBusy(false); }
   }
 
   async function onSignUp(e: React.FormEvent<HTMLFormElement>) {
