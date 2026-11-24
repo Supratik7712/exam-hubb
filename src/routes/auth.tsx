@@ -50,6 +50,7 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sentTo, setSentTo] = useState<string | null>(null);
+  const [otpEmail, setOtpEmail] = useState<string | null>(null);
 
   const goHome = async (preferredRole?: LoginRole) => {
     const me = await fetchMe();
@@ -71,11 +72,23 @@ function AuthPage() {
     e.preventDefault();
     const fd = new FormData(e.currentTarget);
     setBusy(true);
+    const email = String(fd.get("email")).trim();
     const { error } = await supabase.auth.signInWithPassword({
-      email: String(fd.get("email")).trim(),
+      email,
       password: String(fd.get("password")),
     });
-    if (error) { setBusy(false); toast.error(error.message); return; }
+    if (error) {
+      setBusy(false);
+      // Unconfirmed account: send a fresh code and move to the code screen.
+      if (error.message.toLowerCase().includes("not confirmed")) {
+        await supabase.auth.resend({ type: "signup", email });
+        setOtpEmail(email);
+        toast.info("Confirm your email first — we sent you a new code.");
+        return;
+      }
+      toast.error(error.message);
+      return;
+    }
     try { await goHome(loginRole); } finally { setBusy(false); }
   }
 
@@ -97,7 +110,24 @@ function AuthPage() {
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     if (data.session) { await goHome(); return; }
-    setSentTo(email);
+    setOtpEmail(email);
+  }
+
+  async function onVerifyOtp(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!otpEmail) return;
+    const token = String(new FormData(e.currentTarget).get("otp")).trim();
+    setBusy(true);
+    const { error } = await supabase.auth.verifyOtp({ email: otpEmail, token, type: "signup" });
+    if (error) { setBusy(false); toast.error(error.message); return; }
+    try { await goHome(); } finally { setBusy(false); }
+  }
+
+  async function onResendOtp() {
+    if (!otpEmail) return;
+    const { error } = await supabase.auth.resend({ type: "signup", email: otpEmail });
+    if (error) toast.error(error.message);
+    else toast.success("A new code is on its way.");
   }
 
   async function onForgot(e: React.FormEvent<HTMLFormElement>) {
@@ -127,7 +157,28 @@ function AuthPage() {
         <div className="w-full max-w-md rounded-2xl border bg-card p-8 shadow-lift">
           <div className="mb-6 lg:hidden"><Logo /></div>
 
-          {sentTo ? (
+          {otpEmail ? (
+            <form onSubmit={onVerifyOtp} className="space-y-4">
+              <div className="text-center">
+                <MailCheck className="mx-auto size-10 text-success" />
+                <h1 className="mt-4 text-2xl font-bold">Enter your verification code</h1>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  We sent a 6-digit code to <strong>{otpEmail}</strong>. Enter it to finish signing up — you only need to do this once.
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="otp">Verification code</Label>
+                <Input id="otp" name="otp" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]*" maxLength={8} required className="text-center text-lg tracking-[0.5em]" placeholder="••••••" />
+              </div>
+              <Button className="w-full" disabled={busy}>{busy && <Loader2 className="animate-spin" />}Verify and continue</Button>
+              <p className="text-center text-sm text-muted-foreground">
+                Didn't get it? <button type="button" className="text-primary underline" onClick={onResendOtp}>Resend code</button>
+              </p>
+              <p className="text-center text-sm">
+                <button type="button" className="text-primary underline" onClick={() => setOtpEmail(null)}>Back to sign in</button>
+              </p>
+            </form>
+          ) : sentTo ? (
             <div className="text-center">
               <MailCheck className="mx-auto size-10 text-success" />
               <h1 className="mt-4 text-2xl font-bold">Check your inbox</h1>
