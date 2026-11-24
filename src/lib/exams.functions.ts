@@ -15,12 +15,14 @@ export const getWorkspace = createServerFn({ method: "POST" }).middleware([requi
     if (profileError) throw profileError;
     if (!allowed || profile?.account_status !== "active") throw new Error("Not authorized");
     const [{ data: exams, error }, { data: questions, error: qError }] = await Promise.all([
-      context.supabase.from("exams").select("*").order("created_at", { ascending: false }),
+      // Teacher view is always own papers only, even for accounts that are also admins
+      data.role === "teacher" ? context.supabase.from("exams").select("*").eq("teacher_id", context.userId).order("created_at", { ascending: false }) : context.supabase.from("exams").select("*").order("created_at", { ascending: false }),
       data.role === "teacher" ? context.supabase.from("questions").select("*").is("exam_id", null).order("created_at", { ascending: false }) : Promise.resolve({ data: [], error: null }),
     ]);
     if (error) throw error;
     if (qError) throw qError;
-    const { data: attempts } = await context.supabase.from("exam_attempts").select("exam_id, score, total_marks, status");
+    const ids = (exams ?? []).map(e => e.id);
+    const { data: attempts } = ids.length ? await context.supabase.from("exam_attempts").select("exam_id, score, total_marks, status").in("exam_id", ids) : { data: [] };
     const stats: Record<string, { attempts: number; avg: number | null }> = {};
     for (const a of attempts ?? []) {
       const s = (stats[a.exam_id] ??= { attempts: 0, avg: null }); const pct = a.total_marks > 0 ? (a.score / a.total_marks) * 100 : 0;
