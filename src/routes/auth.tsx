@@ -31,6 +31,7 @@ export const Route = createFileRoute("/auth")({ staticData: { sitemap: true },
   component: AuthPage,
 });
 
+const ADMIN_HINT_KEY = "examhubb.adminHint";
 type LoginRole = "student" | "teacher" | "admin";
 
 const signupSchema = z.object({
@@ -51,10 +52,16 @@ function AuthPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [sentTo, setSentTo] = useState<string | null>(null);
   const [otpEmail, setOtpEmail] = useState<string | null>(null);
+  // While we check for an existing/returning session, show a spinner instead of the form (no flash of role picker).
+  const [checking, setChecking] = useState(true);
+  // Admin tile only shows on browsers where an admin account has signed in before; real access is checked by roles.
+  const [showAdmin, setShowAdmin] = useState(false);
+  useEffect(() => { try { setShowAdmin(localStorage.getItem(ADMIN_HINT_KEY) === "1"); } catch { /* ignore */ } }, []);
 
   const goHome = async (preferredRole?: LoginRole) => {
     const me = await fetchMe();
     qc.setQueryData(["me"], me);
+    try { if (me?.roles.includes("admin")) localStorage.setItem(ADMIN_HINT_KEY, "1"); } catch { /* ignore */ }
     if (preferredRole && preferredRole !== "teacher" && me && !me.roles.includes(preferredRole) && primaryRole(me)) {
       toast.info(`Signed in as ${primaryRole(me)} — redirecting to your dashboard.`);
     }
@@ -64,7 +71,9 @@ function AuthPage() {
   // Already signed in (or returning from Google): go to dashboard.
   useEffect(() => {
     // Quick local session check for the redirect only; protected pages still re-validate the user.
-    supabase.auth.getSession().then(async ({ data }) => { if (data.session?.user) await goHome(takeSignInRole()); }).catch((error: Error) => toast.error(error.message));
+    supabase.auth.getSession()
+      .then(async ({ data }) => { if (data.session?.user) await goHome(takeSignInRole()); else setChecking(false); })
+      .catch((error: Error) => { setChecking(false); toast.error(error.message); });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -138,6 +147,17 @@ function AuthPage() {
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     setSentTo(email);
+  }
+
+  if (checking) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background" role="status" aria-live="polite">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <Loader2 className="size-8 animate-spin text-primary" />
+          <p className="text-sm">Signing you in…</p>
+        </div>
+      </div>
+    );
   }
 
   const err = (k: string) => errors[k] && <p className="text-xs text-destructive">{errors[k]}</p>;
@@ -223,7 +243,7 @@ function AuthPage() {
                 <h1 className="text-2xl font-bold">Welcome back</h1>
                 <p className="mt-1 text-sm text-muted-foreground">New here? <Link to="/auth" search={{ mode: "signup" }} className="text-primary underline">Create an account</Link></p>
               </div>
-              <RolePicker value={loginRole} onChange={(v) => setLoginRole(v as LoginRole)} options={["student", "teacher", "admin"]} />
+              <RolePicker value={loginRole} onChange={(v) => setLoginRole(v as LoginRole)} options={showAdmin ? ["student", "teacher", "admin"] : ["student", "teacher"]} />
               <div className="space-y-1.5"><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" required /></div>
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
