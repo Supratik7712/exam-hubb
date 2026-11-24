@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import {
-  ArrowRight, BarChart3, Award, Brain, Clock, ShieldCheck, Sparkles, GraduationCap, Users, ClipboardCheck, HelpCircle,
+  ArrowRight, BarChart3, Award, Brain, Clock, ShieldCheck, Sparkles, GraduationCap, Users, ClipboardCheck, HelpCircle, Menu,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/logo";
 import { AboutDialogButton, AboutSection } from "@/components/about-project";
 import { useMe, homePathFor } from "@/lib/auth";
@@ -75,26 +77,75 @@ const faqs = [
   },
 ];
 
+const navLinks = [
+  { href: "#features", label: "Features" },
+  { href: "#roles", label: "For your role" },
+  { href: "#how", label: "How it works" },
+  { href: "#faq", label: "FAQ" },
+  { href: "#about", label: "About" },
+];
+
 function Landing() {
   const { data: me } = useMe();
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-30 border-b border-border/60 bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
-          <Logo />
+          <div className="flex min-w-0 items-center gap-2">
+            <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
+                  <Menu className="size-5" />
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="left" className="w-72">
+                <SheetHeader>
+                  <SheetTitle><Logo /></SheetTitle>
+                </SheetHeader>
+                <nav className="mt-6 flex flex-col gap-1">
+                  {navLinks.map((l) => (
+                    <a
+                      key={l.href}
+                      href={l.href}
+                      onClick={() => setMenuOpen(false)}
+                      className="rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-accent hover:text-foreground"
+                    >
+                      {l.label}
+                    </a>
+                  ))}
+                </nav>
+                <div className="mt-6 flex flex-col gap-2 border-t pt-6">
+                  {me ? (
+                    <Button asChild onClick={() => setMenuOpen(false)}>
+                      <Link to={homePathFor(me)}>Go to dashboard</Link>
+                    </Button>
+                  ) : (
+                    <>
+                      <Button asChild onClick={() => setMenuOpen(false)}>
+                        <Link to="/auth" search={{ mode: "signup" }}>Get started</Link>
+                      </Button>
+                      <Button variant="outline" asChild onClick={() => setMenuOpen(false)}>
+                        <Link to="/auth">Sign in</Link>
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </SheetContent>
+            </Sheet>
+            <Logo />
+          </div>
           <nav className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
-            <a href="#features" className="hover:text-foreground">Features</a>
-            <a href="#roles" className="hover:text-foreground">For your role</a>
-            <a href="#how" className="hover:text-foreground">How it works</a>
-            <a href="#faq" className="hover:text-foreground">FAQ</a>
-            <a href="#about" className="hover:text-foreground">About</a>
+            {navLinks.map((l) => (
+              <a key={l.href} href={l.href} className="hover:text-foreground">{l.label}</a>
+            ))}
           </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
             {me ? (
               <Button asChild><Link to={homePathFor(me)}>Go to dashboard</Link></Button>
             ) : (
               <>
-                <Button variant="ghost" asChild><Link to="/auth">Sign in</Link></Button>
+                <Button variant="ghost" asChild className="hidden sm:inline-flex"><Link to="/auth">Sign in</Link></Button>
                 <Button asChild><Link to="/auth" search={{ mode: "signup" }}>Get started</Link></Button>
               </>
             )}
