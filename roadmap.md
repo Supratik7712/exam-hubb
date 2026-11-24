@@ -23,3 +23,4 @@
 - [x] Proctored full-screen exam, copy blocking, 3 tab-switch warnings then cancel + teacher/admin notifications
 - [x] Study materials (teacher upload PDF/Word, student download) replace the question bank menu
 - [x] View certificate button on results, after-exam star feedback popup, announcements under the bell
+- [x] LinkedIn buttons in the About section for the four members who have profiles (Supratik, Swastika, Suparna, Rashi) — Swayam and both teachers stay without one
