@@ -78,6 +78,20 @@
       "when": 1795528491880,
       "tag": "0010_exam_candidate_details_admin_activity",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1795528889175,
+      "tag": "0011_optional_manual_review",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1795528922282,
+      "tag": "0012_keep_teacher_overrides",
+      "breakpoints": true
     }
   ]
 }

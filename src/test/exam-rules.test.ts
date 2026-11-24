@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { questionSchema, examSchema, examStatus, countWords } from "@/lib/exam-rules";
 const question = { topic: "Logic", question_text: "Is true true?", question_type: "TRUE_FALSE", options: ["True", "False"], correct_answer: 0, marks: 1, difficulty: "Easy", explanation: "" };
-const exam = { title: "Logic", subject: "Math", description: "", duration_minutes: 30, start_at: null, end_at: null, status: "draft", question_ids: [], settings: { randomize_questions: false, randomize_options: false, release_results: false } };
+const exam = { title: "Logic", subject: "Math", description: "", duration_minutes: 30, start_at: null, end_at: null, status: "draft", question_ids: [], settings: { randomize_questions: false, randomize_options: false, release_results: false, manual_review: false } };
 describe("exam setup rules", () => {
   it("supports MCQ", () => expect(questionSchema.safeParse({ ...question, question_type: "MCQ" }).success).toBe(true));
   it("requires True/False options for True/False questions", () => expect(questionSchema.safeParse({ ...question, options: ["Yes", "No"] }).success).toBe(false));
@@ -16,4 +16,13 @@ describe("exam setup rules", () => {
   it("rejects a timer of 0 minutes", () => expect(examSchema.safeParse({ ...exam, duration_minutes: 0 }).success).toBe(false));
   it("moves scheduled exams to active when start time arrives", () => expect(examStatus({ status: "scheduled", start_at: "2026-11-15T10:00:00Z", end_at: "2026-11-15T13:00:00Z" }, Date.parse("2026-11-15T12:00:00Z"))).toBe("active"));
   it("treats ended exams as completed", () => expect(examStatus({ status: "active", start_at: null, end_at: "2026-11-15T11:00:00Z" }, Date.parse("2026-11-15T12:00:00Z"))).toBe("completed"));
+});
+import { examSchema as examSchemaMR } from "@/lib/exam-rules";
+import { it as itMR, expect as expectMR } from "vitest";
+itMR("manual checking is optional and off unless the teacher picks it", () => {
+  const base = { title: "T", subject: "S", description: "", duration_minutes: 20, start_at: null, end_at: null, status: "draft" as const, question_ids: [] };
+  const off = examSchemaMR.parse({ ...base, settings: { randomize_questions: false, randomize_options: false, release_results: false } });
+  expectMR(off.settings.manual_review).toBe(false);
+  const on = examSchemaMR.parse({ ...base, settings: { randomize_questions: false, randomize_options: false, release_results: false, manual_review: true } });
+  expectMR(on.settings.manual_review).toBe(true);
 });

@@ -17,7 +17,7 @@ import { pageHead } from "@/lib/page-head";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/teacher/results")({
-  head: () => pageHead("Exam results", "Review student attempts and mark short answers on ExamHub."),
+  head: () => pageHead("Exam results", "Review student attempts, mark short answers and re-check automatic marks on ExamHub."),
   loader: ({ context }) => context.queryClient.ensureQueryData(workspaceQuery("teacher")),
   errorComponent: ({ error }) => <p role="alert" className="text-destructive">{error instanceof Error ? error.message : String(error)}</p>,
   component: TeacherResults,
@@ -32,11 +32,12 @@ function TeacherResults() {
   const attempts = useQuery({ queryKey: ["exam-attempts", examId], enabled: !!examId, queryFn: () => list({ data: { id: examId! } }) });
   if (!published.length) return <EmptyState icon={ClipboardList} title="No published exams" text="Results appear here once you publish an exam and students attempt it." />;
   const rows = attempts.data ?? [];
+  const cur = published.find(e => e.id === examId); const cs = cur?.settings; const manualOn = !!cs && typeof cs === "object" && !Array.isArray(cs) && cs["manual_review"] === true;
   const finished = rows.filter(r => r.status !== "in_progress");
   const avg = finished.length ? Math.round(finished.reduce((n, r) => n + percentOf(r.score, r.total_marks), 0) / finished.length) : null;
   return <div className="space-y-6">
     <div className="flex flex-wrap items-end justify-between gap-4">
-      <div><h2 className="text-3xl font-bold">Results</h2><p className="mt-1 text-muted-foreground">{rows.length} attempts{avg != null ? ` · average ${avg}%` : ""} · {rows.filter(r => r.status === "submitted").length} need marking</p></div>
+      <div><h2 className="text-3xl font-bold">Results</h2>{examId && <Badge variant="outline" className="mt-2">{manualOn ? "Automatic + manual check" : "Automatic marking"}</Badge>}<p className="mt-1 text-muted-foreground">{rows.length} attempts{avg != null ? ` · average ${avg}%` : ""} · {rows.filter(r => r.status === "submitted").length} need marking</p></div>
       <Select value={examId ?? ""} onValueChange={setExamId}><SelectTrigger className="w-72" aria-label="Exam"><SelectValue placeholder="Choose exam" /></SelectTrigger>
         <SelectContent>{published.map(e => <SelectItem key={e.id} value={e.id}>{e.title}</SelectItem>)}</SelectContent></Select>
     </div>
@@ -47,13 +48,13 @@ function TeacherResults() {
         <td className="p-3">{r.submitted_at ? new Date(r.submitted_at).toLocaleString() : "—"}</td>
         <td className="p-3 font-semibold">{r.status === "in_progress" ? "—" : `${r.score} / ${r.total_marks} (${percentOf(r.score, r.total_marks)}%)`}</td>
         <td className="p-3"><Badge variant={r.status === "submitted" ? "destructive" : r.status === "graded" ? "default" : "secondary"}>{r.status === "submitted" ? "Needs marking" : r.status === "graded" ? "Marked" : "In progress"}</Badge></td>
-        <td className="p-3 text-right"><Button size="sm" variant="outline" disabled={r.status === "in_progress"} onClick={() => setOpen(r)}>{r.status === "submitted" ? "Mark" : "View"}</Button></td>
+        <td className="p-3 text-right"><Button size="sm" variant="outline" disabled={r.status === "in_progress"} onClick={() => setOpen(r)}>{r.status === "submitted" ? "Mark" : manualOn && r.status === "graded" ? "Re-check" : "View"}</Button></td>
       </tr>)}</tbody></table></div> : <EmptyState icon={ClipboardList} title="No attempts yet" text="Student attempts for this exam will appear here." />}
-    <AttemptDialog attempt={open} onClose={() => setOpen(null)} examId={examId} />
+    <AttemptDialog attempt={open} onClose={() => setOpen(null)} examId={examId} manual={manualOn} />
   </div>;
 }
 
-function AttemptDialog({ attempt, onClose, examId }: { attempt: StaffAttempt | null; onClose: () => void; examId: string | undefined }) {
+function AttemptDialog({ attempt, onClose, examId, manual }: { attempt: StaffAttempt | null; onClose: () => void; examId: string | undefined; manual: boolean }) {
   const qc = useQueryClient();
   const get = useServerFn(getAttemptDetail);
   const grade = useServerFn(gradeShortAnswer);
@@ -78,7 +79,12 @@ function AttemptDialog({ attempt, onClose, examId }: { attempt: StaffAttempt | n
             <span className="text-sm text-muted-foreground">/ {q.marks}</span><Button size="sm" type="submit" disabled={m.isPending}>Save marks</Button>
             {q.marks_awarded != null && <CheckCircle2 className="size-4 text-primary" />}
           </form>}
-        </div> : <ul className="mt-2 space-y-1 text-sm">{q.options.map((o, j) => <li key={j} className={cn("rounded px-2 py-1", j === q.correct_answer && "bg-accent font-medium")}>{String.fromCharCode(65 + j)}. {o}{j === q.selected_option && <span className="ml-2 text-xs text-muted-foreground">(student's answer)</span>}</li>)}</ul>}
+        </div> : <ul className="mt-2 space-y-1 text-sm">{q.options.map((o, j) => <li key={j} className={cn("rounded px-2 py-1", j === q.correct_answer && "bg-accent font-medium")}>{String.fromCharCode(65 + j)}. {o}{j === q.selected_option && <span className="ml-2 text-xs text-muted-foreground">(student's answer)</span>}</li>)}{q.selected_option == null && <li className="px-2 text-xs text-muted-foreground">Not answered</li>}</ul>}
+        {manual && q.question_type !== "SHORT_ANSWER" && q.answer_id && <form className="mt-3 flex flex-wrap items-center gap-2 border-t pt-3" onSubmit={e => { e.preventDefault(); const v = Number(marks[q.id] ?? q.marks_awarded ?? ""); if (Number.isNaN(v)) return; m.mutate({ answer_id: q.answer_id!, marks: v }); }}>
+          <span className="text-xs text-muted-foreground">Auto mark: {q.selected_option === q.correct_answer ? q.marks : 0} · Your check:</span>
+          <Input aria-label={`Marks for question ${i + 1}`} type="number" step="0.5" min={0} max={q.marks} className="w-24" value={marks[q.id] ?? (q.marks_awarded != null ? String(q.marks_awarded) : "")} onChange={e => setMarks(s => ({ ...s, [q.id]: e.target.value }))} />
+          <span className="text-sm text-muted-foreground">/ {q.marks}</span><Button size="sm" variant="outline" type="submit" disabled={m.isPending}>Update marks</Button>
+        </form>}
       </article>)}</div>}
     </DialogContent>
   </Dialog>;
