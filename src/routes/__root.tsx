@@ -87,6 +87,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { title: "ExamHubb – Intelligent Online Examination System" },
       { name: "description", content: "Create, take and evaluate online exams with analytics and AI." },
       { name: "author", content: "ExamHubb" },
+      { name: "google-site-verification", content: "JmaiZ1MEElK-SoqwhCliSPPFzgTfqHqr2L1yDDFNXEA" },
       { property: "og:title", content: "ExamHubb – Intelligent Online Examination System" },
       { property: "og:description", content: "Create, take and evaluate online exams with analytics and AI." },
       { property: "og:type", content: "website" },
