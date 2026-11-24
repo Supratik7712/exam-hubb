@@ -252,10 +252,12 @@ function Landing() {
       <AboutSection />
 
       <footer className="border-t">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-muted-foreground md:flex-row">
-          <Logo />
-          <p>© 2026 ExamHubb. All rights reserved.</p>
-          <p>
+        <div className="mx-auto flex max-w-6xl flex-col items-center gap-4 px-4 py-8 text-sm text-muted-foreground lg:flex-row lg:justify-between lg:gap-6">
+          <div className="flex flex-col items-center gap-1.5 lg:items-start">
+            <Logo />
+            <p>© 2026 ExamHubb. All rights reserved.</p>
+          </div>
+          <p className="text-center lg:text-right">
             Feedback or queries?{" "}
             <a
               href="mailto:support-query@examhhubb.online"
