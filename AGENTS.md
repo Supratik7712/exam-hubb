@@ -51,3 +51,4 @@ use the editor.
 - First-time phone verification is enforced by `homePathFor` and `requirePhoneVerified`; OTPs are generated and hashed only in authenticated server functions, sent through the Textbee connector, and verified through user-scoped SECURITY DEFINER RPCs — raw codes and connector credentials never reach the browser.
 
 - Sitemap is router-derived (src/lib/sitemap.ts + src/routes/sitemap[.]xml.ts); every route must declare staticData.sitemap — keeps the sitemap in sync with public pages.
+- Admin account deletion: `admin_purge_user` RPC (admin-checked, audited) wipes app data, then a server function deletes storage files and the auth user with the service client — the auth deletion never runs without the RPC's admin check passing.

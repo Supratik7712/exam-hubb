@@ -523,6 +523,7 @@ export type Database = {
       admin_approve_teacher: { Args: { _user_id: string }; Returns: undefined }
       admin_delete_announcement: { Args: { _id: string }; Returns: undefined }
       admin_grant_admin: { Args: { _user_id: string }; Returns: undefined }
+      admin_purge_user: { Args: { _user_id: string }; Returns: undefined }
       admin_report: { Args: never; Returns: Json }
       admin_save_announcement: {
         Args: {

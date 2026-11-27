@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Loader2, Users, ShieldPlus } from "lucide-react";
+import { Loader2, Users, ShieldPlus, Trash2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { deleteUserAccount } from "@/lib/admin-users.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +26,14 @@ function UsersPage() {
   const [filter, setFilter] = useState<Filter>("all");
   const [q, setQ] = useState("");
   const [grant, setGrant] = useState<{ id: string; email: string | null } | null>(null);
+
+  const [del, setDel] = useState<{ id: string; name: string } | null>(null);
+  const deleteFn = useServerFn(deleteUserAccount);
+  const remove = useMutation({
+    mutationFn: (id: string) => deleteFn({ data: { userId: id } }),
+    onSuccess: () => { toast.success("Account deleted permanently"); setDel(null); qc.invalidateQueries({ queryKey: ["admin-users"] }); qc.invalidateQueries({ queryKey: ["admin-stats"] }); },
+    onError: (e: Error) => toast.error(e.message),
+  });
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["admin-users"],
@@ -101,6 +111,7 @@ function UsersPage() {
                       {!self && u.account_status === "active" && <Button size="sm" variant="outline" disabled={act.isPending} onClick={() => act.mutate({ id: u.id, action: "deactivate" })}>Deactivate</Button>}
                       {!self && u.account_status === "inactive" && <Button size="sm" variant="outline" disabled={act.isPending} onClick={() => act.mutate({ id: u.id, action: "activate" })}>Activate</Button>}
                        {u.account_status === "active" && !u.roles.includes("admin") && <Button size="sm" variant="outline" disabled={act.isPending} onClick={() => setGrant({ id: u.id, email: u.email })}><ShieldPlus className="size-4" />Grant admin</Button>}
+                      {!self && <Button size="sm" variant="destructive" disabled={remove.isPending} onClick={() => setDel({ id: u.id, name: u.full_name || u.email || "this user" })}><Trash2 className="size-4" />Delete</Button>}
                     </TableCell>
                   </TableRow>
                 );
@@ -110,6 +121,7 @@ function UsersPage() {
         </div>
       )}
       <Dialog open={!!grant} onOpenChange={o => { if (!o && !act.isPending) setGrant(null); }}><DialogContent><DialogTitle>Grant admin access?</DialogTitle><DialogDescription>{grant?.email} will be able to manage users, approve teachers, close exams and grant admin access to others.</DialogDescription><Button disabled={act.isPending} onClick={() => { if (grant) act.mutate({ id: grant.id, action: "grant" }); }}><ShieldPlus />Confirm admin access</Button></DialogContent></Dialog>
+      <Dialog open={!!del} onOpenChange={o => { if (!o && !remove.isPending) setDel(null); }}><DialogContent><DialogTitle>Delete this account permanently?</DialogTitle><DialogDescription>{del?.name}'s profile, exams, questions, attempts, results, feedback and uploaded files will be erased. This cannot be undone — they would have to sign up again from the beginning.</DialogDescription><Button variant="destructive" disabled={remove.isPending} onClick={() => { if (del) remove.mutate(del.id); }}>{remove.isPending ? <Loader2 className="animate-spin" /> : <Trash2 />}Delete permanently</Button></DialogContent></Dialog>
     </div>
   );
 }
