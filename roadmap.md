@@ -17,7 +17,7 @@
 - [x] Phase 7 – Student performance charts, feedback, teacher live monitoring
 - [x] Phase 8 – AI question generation (teacher approval) + AI study recommendations
 - [x] Phase 9 – Certificates (pass mark, printable, public verification code)
-- [ ] First-time SMS verification: Textbee connector, secure OTP storage/send/verify, phone gate for new Google and email accounts, resend limits, returning-user bypass, end-to-end checks
+- [x] First-time SMS verification: Textbee connector, secure OTP storage/send/verify, phone gate for new Google and email accounts, resend limits, returning-user bypass, real SMS and dashboard access verified end to end
 - [ ] Phase 10 – QA, demo data, docs
 - [x] Short answer questions with word limit + sample DSA/aptitude paper
 - [x] Homepage FAQ section covering accounts, roles, question types and answer security
