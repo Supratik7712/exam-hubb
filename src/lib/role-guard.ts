@@ -5,7 +5,6 @@ import { meQuery, homePathFor, type AppRole } from "./auth";
 export async function requirePhoneVerified(queryClient: QueryClient) {
   const me = await queryClient.ensureQueryData(meQuery);
   if (!me) throw redirect({ to: "/auth" });
-  if (me.profile && !me.profile.phone_verified) throw redirect({ to: "/verify-phone" });
   return me;
 }
 

@@ -59,8 +59,7 @@ function ProfilePage() {
         <div className="space-y-1.5"><Label>Email</Label><Input value={me!.email ?? ""} disabled /></div>
         <div className="space-y-1.5">
           <Label htmlFor="contact_number">Verified mobile number</Label>
-          <Input id="contact_number" name="contact_number" defaultValue={p?.contact_number ?? ""} readOnly={p?.phone_verified} aria-describedby="phone-status" />
-          <p id="phone-status" className="text-xs text-muted-foreground">{p?.phone_verified ? "Verified — contact an administrator if you need to change it." : "This number still needs verification."}</p>
+          <Input id="contact_number" name="contact_number" defaultValue={p?.contact_number ?? ""} />
         </div>
         <p className="text-sm text-muted-foreground">Role: <span className="font-semibold capitalize text-foreground">{me!.roles.join(", ")}</span></p>
         <Button disabled={busy}>Save changes</Button>

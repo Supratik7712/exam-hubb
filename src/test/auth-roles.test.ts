@@ -18,9 +18,5 @@ describe("role routing", () => {
   it("keeps inactive accounts blocked when selecting teacher", () => expect(homePathFor(me(["teacher", "admin"], "inactive"), "teacher")).toBe("/pending"));
   it("unapproved teacher (no role yet) waits on the pending page", () => expect(homePathFor(me([], "pending"))).toBe("/pending"));
   it("deactivated accounts cannot reach dashboards", () => expect(homePathFor(me(["student"], "inactive"))).toBe("/pending"));
-  it("sends only new unverified accounts to phone verification", () => {
-    const unverified = me(["student"]);
-    unverified.profile = { ...unverified.profile!, phone_verified: false };
-    expect(homePathFor(unverified)).toBe("/verify-phone");
-  });
+
 });

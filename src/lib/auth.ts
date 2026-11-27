@@ -53,8 +53,7 @@ export function awaitingTeacherApproval(profile: Pick<Profile, "requested_role" 
   return profile?.requested_role === "teacher" && profile.account_status !== "inactive" && !roles.includes("teacher");
 }
 
-export function homePathFor(me: Me | null, preferredRole?: AppRole): "/admin" | "/teacher" | "/student" | "/pending" | "/teacher-access" | "/verify-phone" {
-  if (me?.profile && !me.profile.phone_verified) return "/verify-phone";
+export function homePathFor(me: Me | null, preferredRole?: AppRole): "/admin" | "/teacher" | "/student" | "/pending" | "/teacher-access" {
   if (me?.profile?.account_status === "inactive") return "/pending";
   // Choosing Teacher without the role opens the request page; it never grants access.
   if (preferredRole === "teacher" && me?.profile?.account_status === "active" && !me.roles.includes("teacher")) return "/teacher-access";
