@@ -3,7 +3,7 @@ import { awaitingTeacherApproval, homePathFor, type Me } from "@/lib/auth";
 
 const me = (roles: Me["roles"], status: "active" | "pending" | "inactive" = "active"): Me => ({
   userId: "u", email: "a@b.c", roles,
-  profile: { account_status: status } as Me["profile"],
+  profile: { account_status: status, phone_verified: true } as Me["profile"],
 });
 
 describe("role routing", () => {
@@ -18,4 +18,9 @@ describe("role routing", () => {
   it("keeps inactive accounts blocked when selecting teacher", () => expect(homePathFor(me(["teacher", "admin"], "inactive"), "teacher")).toBe("/pending"));
   it("unapproved teacher (no role yet) waits on the pending page", () => expect(homePathFor(me([], "pending"))).toBe("/pending"));
   it("deactivated accounts cannot reach dashboards", () => expect(homePathFor(me(["student"], "inactive"))).toBe("/pending"));
+  it("sends only new unverified accounts to phone verification", () => {
+    const unverified = me(["student"]);
+    unverified.profile = { ...unverified.profile!, phone_verified: false };
+    expect(homePathFor(unverified)).toBe("/verify-phone");
+  });
 });

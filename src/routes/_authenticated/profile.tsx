@@ -10,11 +10,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { meQuery, primaryRole } from "@/lib/auth";
 import { pageHead } from "@/lib/page-head";
+import { requirePhoneVerified } from "@/lib/role-guard";
 
 export const Route = createFileRoute("/_authenticated/profile")({ staticData: { sitemap: false },
   beforeLoad: async ({ context }) => {
-    const me = await context.queryClient.ensureQueryData(meQuery);
-    if (!primaryRole(me) || me?.profile?.account_status !== "active") throw redirect({ to: "/pending" });
+    const me = await requirePhoneVerified(context.queryClient);
+    if (!primaryRole(me) || me.profile?.account_status !== "active") throw redirect({ to: "/pending" });
   },
   head: () => pageHead("Profile", "Manage your ExamHubb name, username and contact details."),
   component: ProfilePage,
@@ -56,7 +57,11 @@ function ProfilePage() {
           <div className="space-y-1.5"><Label htmlFor="username">Username</Label><Input id="username" name="username" defaultValue={p?.username ?? ""} /></div>
         </div>
         <div className="space-y-1.5"><Label>Email</Label><Input value={me!.email ?? ""} disabled /></div>
-        <div className="space-y-1.5"><Label htmlFor="contact_number">Contact number</Label><Input id="contact_number" name="contact_number" defaultValue={p?.contact_number ?? ""} /></div>
+        <div className="space-y-1.5">
+          <Label htmlFor="contact_number">Verified mobile number</Label>
+          <Input id="contact_number" name="contact_number" defaultValue={p?.contact_number ?? ""} readOnly={p?.phone_verified} aria-describedby="phone-status" />
+          <p id="phone-status" className="text-xs text-muted-foreground">{p?.phone_verified ? "Verified — contact an administrator if you need to change it." : "This number still needs verification."}</p>
+        </div>
         <p className="text-sm text-muted-foreground">Role: <span className="font-semibold capitalize text-foreground">{me!.roles.join(", ")}</span></p>
         <Button disabled={busy}>Save changes</Button>
       </form>

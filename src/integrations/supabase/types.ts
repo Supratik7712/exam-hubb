@@ -316,6 +316,44 @@ export type Database = {
         }
         Relationships: []
       }
+      phone_verification_challenges: {
+        Row: {
+          attempts: number
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          expires_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          expires_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "phone_verification_challenges_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           account_status: Database["public"]["Enums"]["account_status"]
@@ -324,6 +362,8 @@ export type Database = {
           email: string | null
           full_name: string
           id: string
+          phone_verified: boolean
+          phone_verified_at: string | null
           requested_role: Database["public"]["Enums"]["app_role"]
           updated_at: string
           username: string | null
@@ -335,6 +375,8 @@ export type Database = {
           email?: string | null
           full_name?: string
           id: string
+          phone_verified?: boolean
+          phone_verified_at?: string | null
           requested_role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           username?: string | null
@@ -346,6 +388,8 @@ export type Database = {
           email?: string | null
           full_name?: string
           id?: string
+          phone_verified?: boolean
+          phone_verified_at?: string | null
           requested_role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           username?: string | null
@@ -511,6 +555,14 @@ export type Database = {
         }
         Returns: undefined
       }
+      create_phone_challenge: {
+        Args: { _code_hash: string; _phone: string }
+        Returns: Json
+      }
+      discard_phone_challenge: {
+        Args: { _challenge_id: string }
+        Returns: undefined
+      }
       get_attempt: { Args: { _attempt_id: string }; Returns: Json }
       grade_short_answer: {
         Args: { _answer_id: string; _marks: number }
@@ -556,6 +608,7 @@ export type Database = {
       submit_attempt: { Args: { _attempt_id: string }; Returns: undefined }
       teacher_live_attempts: { Args: never; Returns: Json }
       verify_certificate: { Args: { _code: string }; Returns: Json }
+      verify_phone_code: { Args: { _code_hash: string }; Returns: undefined }
     }
     Enums: {
       account_status: "active" | "pending" | "inactive"

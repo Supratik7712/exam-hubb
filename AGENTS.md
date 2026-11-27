@@ -48,5 +48,6 @@ use the editor.
 - Exam proctoring (tab-switch count, cancellation, staff notifications) is enforced by the `report_tab_switch` RPC; the client only reports events — cancellation can't be bypassed from the browser.
 - Study materials live in the private `study-materials` bucket under `<teacher_uid>/` with a `study_materials` row; reads use short-lived signed URLs for active users only.
 - Admin announcements and personal notifications render only in the header bell popover, not as page banners.
+- First-time phone verification is enforced by `homePathFor` and `requirePhoneVerified`; OTPs are generated and hashed only in authenticated server functions, sent through the Textbee connector, and verified through user-scoped SECURITY DEFINER RPCs — raw codes and connector credentials never reach the browser.
 
 - Sitemap is router-derived (src/lib/sitemap.ts + src/routes/sitemap[.]xml.ts); every route must declare staticData.sitemap — keeps the sitemap in sync with public pages.

@@ -13,6 +13,7 @@ import { ProviderButtons } from "@/components/provider-buttons";
 import { fetchMe, homePathFor, primaryRole } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { takeSignInRole } from "@/lib/signin-intent";
+import { phoneSchema } from "@/lib/phone-verification-rules";
 
 const searchSchema = z.object({ mode: z.enum(["signin", "signup", "forgot"]).optional() });
 
@@ -38,7 +39,7 @@ const signupSchema = z.object({
   full_name: z.string().trim().min(2, "Enter your full name").max(100),
   username: z.string().trim().min(3, "At least 3 characters").max(30).regex(/^[a-zA-Z0-9_.]+$/, "Letters, numbers, _ and . only"),
   email: z.string().trim().email("Enter a valid email").max(255),
-  contact_number: z.string().trim().max(20).regex(/^[0-9+\-\s]*$/, "Digits only").optional(),
+  contact_number: phoneSchema,
   password: z.string().min(8, "At least 8 characters").max(72),
 });
 
@@ -230,7 +231,12 @@ function AuthPage() {
                 <div className="space-y-1.5"><Label htmlFor="username">Username</Label><Input id="username" name="username" />{err("username")}</div>
               </div>
               <div className="space-y-1.5"><Label htmlFor="email">Email</Label><Input id="email" name="email" type="email" />{err("email")}</div>
-              <div className="space-y-1.5"><Label htmlFor="contact_number">Contact number <span className="text-muted-foreground">(optional)</span></Label><Input id="contact_number" name="contact_number" />{err("contact_number")}</div>
+              <div className="space-y-1.5">
+                <Label htmlFor="contact_number">Mobile number with country code</Label>
+                <Input id="contact_number" name="contact_number" type="tel" autoComplete="tel" placeholder="+91 98765 43210" />
+                <p className="text-xs text-muted-foreground">We’ll text a one-time verification code after you create your account.</p>
+                {err("contact_number")}
+              </div>
               <div className="space-y-1.5"><Label htmlFor="password">Password</Label><Input id="password" name="password" type="password" />{err("password")}</div>
               <Button className="w-full" disabled={busy}>{busy && <Loader2 className="animate-spin" />}Create account</Button>
               <Divider />

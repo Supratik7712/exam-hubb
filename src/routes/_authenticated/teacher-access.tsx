@@ -8,8 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { awaitingTeacherApproval, homePathFor, meQuery, primaryRole } from "@/lib/auth";
 import { pageHead } from "@/lib/page-head";
+import { requirePhoneVerified } from "@/lib/role-guard";
 
 export const Route = createFileRoute("/_authenticated/teacher-access")({ staticData: { sitemap: false },
+  beforeLoad: ({ context }) => requirePhoneVerified(context.queryClient),
   head: () => pageHead("Teacher access", "Request teacher access to create and manage exams on ExamHubb."),
   component: TeacherAccess,
 });

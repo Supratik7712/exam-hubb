@@ -21,6 +21,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedStudentRouteRouteImport } from './routes/_authenticated/student/route'
 import { Route as AuthenticatedTeacherRouteRouteImport } from './routes/_authenticated/teacher/route'
 import { Route as AuthenticatedTeacherAccessRouteImport } from './routes/_authenticated/teacher-access'
+import { Route as AuthenticatedVerifyPhoneRouteImport } from './routes/_authenticated/verify-phone'
 import { Route as VerifyCodeRouteImport } from './routes/verify.$code'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 import { Route as AuthenticatedAdminActivityRouteImport } from './routes/_authenticated/admin/activity'
@@ -108,6 +109,12 @@ const AuthenticatedTeacherAccessRoute =
   AuthenticatedTeacherAccessRouteImport.update({
     id: '/teacher-access',
     path: '/teacher-access',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedVerifyPhoneRoute =
+  AuthenticatedVerifyPhoneRouteImport.update({
+    id: '/verify-phone',
+    path: '/verify-phone',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const VerifyCodeRoute = VerifyCodeRouteImport.update({
@@ -273,6 +280,7 @@ export interface FileRoutesByFullPath {
   '/pending': typeof AuthenticatedPendingRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/teacher-access': typeof AuthenticatedTeacherAccessRoute
+  '/verify-phone': typeof AuthenticatedVerifyPhoneRoute
   '/verify/$code': typeof VerifyCodeRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/announcements': typeof AuthenticatedAdminAnnouncementsRoute
@@ -309,6 +317,7 @@ export interface FileRoutesByTo {
   '/pending': typeof AuthenticatedPendingRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/teacher-access': typeof AuthenticatedTeacherAccessRoute
+  '/verify-phone': typeof AuthenticatedVerifyPhoneRoute
   '/verify/$code': typeof VerifyCodeRoute
   '/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/admin/announcements': typeof AuthenticatedAdminAnnouncementsRoute
@@ -350,6 +359,7 @@ export interface FileRoutesById {
   '/_authenticated/pending': typeof AuthenticatedPendingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/teacher-access': typeof AuthenticatedTeacherAccessRoute
+  '/_authenticated/verify-phone': typeof AuthenticatedVerifyPhoneRoute
   '/verify/$code': typeof VerifyCodeRoute
   '/_authenticated/admin/activity': typeof AuthenticatedAdminActivityRoute
   '/_authenticated/admin/announcements': typeof AuthenticatedAdminAnnouncementsRoute
@@ -391,6 +401,7 @@ export interface FileRouteTypes {
     | '/pending'
     | '/profile'
     | '/teacher-access'
+    | '/verify-phone'
     | '/verify/$code'
     | '/admin/activity'
     | '/admin/announcements'
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/pending'
     | '/profile'
     | '/teacher-access'
+    | '/verify-phone'
     | '/verify/$code'
     | '/admin/activity'
     | '/admin/announcements'
@@ -467,6 +479,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pending'
     | '/_authenticated/profile'
     | '/_authenticated/teacher-access'
+    | '/_authenticated/verify-phone'
     | '/verify/$code'
     | '/_authenticated/admin/activity'
     | '/_authenticated/admin/announcements'
@@ -590,6 +603,13 @@ declare module '@tanstack/react-router' {
       path: '/teacher-access'
       fullPath: '/teacher-access'
       preLoaderRoute: typeof AuthenticatedTeacherAccessRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/verify-phone': {
+      id: '/_authenticated/verify-phone'
+      path: '/verify-phone'
+      fullPath: '/verify-phone'
+      preLoaderRoute: typeof AuthenticatedVerifyPhoneRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/verify/$code': {
@@ -870,6 +890,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedPendingRoute: typeof AuthenticatedPendingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedTeacherAccessRoute: typeof AuthenticatedTeacherAccessRoute
+  AuthenticatedVerifyPhoneRoute: typeof AuthenticatedVerifyPhoneRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -880,6 +901,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPendingRoute: AuthenticatedPendingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedTeacherAccessRoute: AuthenticatedTeacherAccessRoute,
+  AuthenticatedVerifyPhoneRoute: AuthenticatedVerifyPhoneRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

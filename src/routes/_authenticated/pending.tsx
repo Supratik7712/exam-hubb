@@ -6,8 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/logo";
 import { meQuery, homePathFor } from "@/lib/auth";
 import { pageHead } from "@/lib/page-head";
+import { requirePhoneVerified } from "@/lib/role-guard";
 
 export const Route = createFileRoute("/_authenticated/pending")({ staticData: { sitemap: false },
+  beforeLoad: ({ context }) => requirePhoneVerified(context.queryClient),
   head: () => pageHead("Account status", "Check your ExamHubb account approval and access status."),
   component: Pending,
 });
